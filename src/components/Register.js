@@ -83,8 +83,7 @@ class Register extends Component {
         const err = this.validate();
 
         if (!err){
-            const {phone, password, deviceId , type} = this.state;
-            this.props.userLogin({ phone, password, deviceId, type }, this.props.lang);
+            this.props.navigation.navigate('Tabs');
         }
 
     }
@@ -99,6 +98,30 @@ class Register extends Component {
             code        : name
         });
         this.setState({ isModalCode: !this.state.isModalCode});
+    }
+
+    toggleModalNationality = () => {
+        this.setState({ isModalNationality: !this.state.isModalNationality});
+    };
+
+    selectnationalityId(id, name) {
+        this.setState({
+            nationalityId       : id,
+            nationality         : name
+        });
+        this.setState({ isModalNationality: !this.state.isModalNationality});
+    }
+
+    toggleModalCountry = () => {
+        this.setState({ isModalCountry: !this.state.isModalCountry});
+    };
+
+    selectCountryId(id, name) {
+        this.setState({
+            countryId      : id,
+            country        : name
+        });
+        this.setState({ isModalCountry: !this.state.isModalCountry});
     }
 
     async componentWillMount() {
@@ -190,32 +213,257 @@ class Register extends Component {
                                                 style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_5, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.width_90]}
                                                 onPress     = {this.toggleModalCode}
                                             >
-                                                <Text style={[styles.textRegular, styles.textSize_12, styles.text_light_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
+                                                <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
                                                     {this.state.code}
                                                 </Text>
-                                                <Icon style={[styles.textSize_12, styles.text_light_gray]} type="AntDesign" name='down' />
+                                                <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='down' />
                                             </TouchableOpacity>
                                         </View>
+                                        <Modal isVisible={this.state.isModalCode} onBackdropPress={() => this.toggleModalCode()} style={[ styles.bottomCenter, styles.Width_100 ]}>
+                                            <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
+
+                                                <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
+                                                    <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
+                                                        {i18n.t('codeocun')}
+                                                    </Text>
+                                                </View>
+
+                                                <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
+                                                    <TouchableOpacity
+                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                        onPress             = {() => this.selectCodeId(1, '+666')}
+                                                    >
+                                                        <View style={[styles.overHidden, styles.rowRight]}>
+                                                            <CheckBox
+                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                                color               = {styles.text_red}
+                                                                selectedColor       = {styles.text_red}
+                                                                checked             = {this.state.codeId === 1}
+                                                            />
+                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                                +666
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                        onPress             = {() => this.selectCodeId(2, '+777')}
+                                                    >
+                                                        <View style={[styles.overHidden, styles.rowRight]}>
+                                                            <CheckBox
+                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                                color               = {styles.text_red}
+                                                                selectedColor       = {styles.text_red}
+                                                                checked             = {this.state.codeId === 2}
+                                                            />
+                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                                +777
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                        onPress             = {() => this.selectCodeId(3, '+888')}
+                                                    >
+                                                        <View style={[styles.overHidden, styles.rowRight]}>
+                                                            <CheckBox
+                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                                color               = {styles.text_red}
+                                                                selectedColor       = {styles.text_red}
+                                                                checked             = {this.state.codeId === 3}
+                                                            />
+                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                                +777
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                        onPress             = {() => this.selectCodeId(4, '+1000')}
+                                                    >
+                                                        <View style={[styles.overHidden, styles.rowRight]}>
+                                                            <CheckBox
+                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                                color               = {styles.text_red}
+                                                                selectedColor       = {styles.text_red}
+                                                                checked             = {this.state.codeId === 4}
+                                                            />
+                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                                +777
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                </View>
+
+                                            </View>
+                                        </Modal>
                                     </View>
 
                                     <TouchableOpacity
                                         style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
                                         onPress     = {this.toggleModalNationality}
                                     >
-                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
+                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
                                             {this.state.nationality}
                                         </Text>
-                                        <Icon style={[styles.textSize_12, styles.text_black]} type="AntDesign" name='down' />
+                                        <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='down' />
                                     </TouchableOpacity>
+                                    <Modal isVisible={this.state.isModalNationality} onBackdropPress={() => this.toggleModalNationality()} style={[ styles.bottomCenter, styles.Width_100 ]}>
+                                        <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
+
+                                            <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
+                                                <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
+                                                    {i18n.t('naonality')}
+                                                </Text>
+                                            </View>
+
+                                            <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
+                                                <TouchableOpacity
+                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                    onPress             = {() => this.selectnationalityId(1, 'مصري')}
+                                                >
+                                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                                        <CheckBox
+                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                            color               = {styles.text_red}
+                                                            selectedColor       = {styles.text_red}
+                                                            checked             = {this.state.nationalityId === 1}
+                                                        />
+                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                            مصري
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                    onPress             = {() => this.selectnationalityId(2, 'سعودي')}
+                                                >
+                                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                                        <CheckBox
+                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                            color               = {styles.text_red}
+                                                            selectedColor       = {styles.text_red}
+                                                            checked             = {this.state.nationalityId === 2}
+                                                        />
+                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                            سعودي
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                    onPress             = {() => this.selectnationalityId(3, 'اجنبي')}
+                                                >
+                                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                                        <CheckBox
+                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                            color               = {styles.text_red}
+                                                            selectedColor       = {styles.text_red}
+                                                            checked             = {this.state.nationalityId === 3}
+                                                        />
+                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                            اجنبي
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </View>
+
+                                        </View>
+                                    </Modal>
+
 
                                     <TouchableOpacity
                                         style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
                                         onPress     = {this.toggleModalCountry}
                                     >
-                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
+                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
                                             {this.state.country}
                                         </Text>
-                                        <Icon style={[styles.textSize_12, styles.text_black]} type="AntDesign" name='down' />
+                                        <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='down' />
+                                    </TouchableOpacity>
+                                    <Modal isVisible={this.state.isModalCountry} onBackdropPress={() => this.toggleModalCountry()} style={[ styles.bottomCenter, styles.Width_100 ]}>
+                                        <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
+
+                                            <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
+                                                <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
+                                                    {i18n.t('choosecity')}
+                                                </Text>
+                                            </View>
+
+                                            <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
+                                                <TouchableOpacity
+                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                    onPress             = {() => this.selectCountryId(1, 'مصر')}
+                                                >
+                                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                                        <CheckBox
+                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                            color               = {styles.text_red}
+                                                            selectedColor       = {styles.text_red}
+                                                            checked             = {this.state.countryId === 1}
+                                                        />
+                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                            مصر
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                    onPress             = {() => this.selectCountryId(2, 'السعوديه')}
+                                                >
+                                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                                        <CheckBox
+                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                            color               = {styles.text_red}
+                                                            selectedColor       = {styles.text_red}
+                                                            checked             = {this.state.countryId === 2}
+                                                        />
+                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                            السعوديه
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                    onPress             = {() => this.selectCountryId(3, 'جده')}
+                                                >
+                                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                                        <CheckBox
+                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                            color               = {styles.text_red}
+                                                            selectedColor       = {styles.text_red}
+                                                            checked             = {this.state.countryId === 3}
+                                                        />
+                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                            جده
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </View>
+
+                                        </View>
+                                    </Modal>
+
+
+                                    <TouchableOpacity
+                                        style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
+                                        onPress     = {this.toggleModalCountry}
+                                    >
+                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
+                                            {i18n.translate('IDphoto')}
+                                        </Text>
+                                        <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='camera' />
+                                    </TouchableOpacity>
+
+
+                                    <TouchableOpacity
+                                        style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
+                                        onPress     = {this.toggleModalCountry}
+                                    >
+                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
+                                            {i18n.translate('licensephoto')}
+                                        </Text>
+                                        <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='camera' />
                                     </TouchableOpacity>
 
                                     <View style={[styles.position_R, styles.overHidden, styles.height_70, styles.flexCenter]}>
@@ -256,84 +504,6 @@ class Register extends Component {
 
                                 </Form>
                             </KeyboardAvoidingView>
-                            <Modal isVisible={this.state.isModalCode} onBackdropPress={() => this.toggleModalCode()} style={[ styles.bottomCenter, styles.Width_100 ]}>
-                                <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
-
-                                    <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
-                                        <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
-                                            {i18n.t('codeocun')}
-                                        </Text>
-                                    </View>
-
-                                    <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(1, '+666')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 1}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +666
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(2, '+777')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 2}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +777
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(3, '+888')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 3}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +777
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(4, '+1000')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 4}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +777
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </View>
-
-                                </View>
-                            </Modal>
                         </View>
                     </Content>
 

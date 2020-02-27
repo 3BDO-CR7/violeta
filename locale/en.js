@@ -212,6 +212,8 @@ const en = {
     'filrsub'                           : 'choose subcategory',
     'neworder'                          : 'add new order',
     'naonality'                         : 'naonality',
+    'IDphoto'                           : 'ID photo',
+    'licensephoto'                      : 'license photo',
 
 };
 

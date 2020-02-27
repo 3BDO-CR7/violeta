@@ -221,6 +221,8 @@ const ar = {
     'neworder'                  : 'إضافه طلب جديد',
     'adding'                    : 'الإضافات',
     'naonality'                 : 'الجنسيه',
+    'IDphoto'                   : 'صوره الهويه',
+    'licensephoto'              : 'صوره الرخصه',
 };
 
 export default ar;

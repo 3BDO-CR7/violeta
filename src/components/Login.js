@@ -69,8 +69,7 @@ class Login extends Component {
         const err = this.validate();
 
         if (!err){
-            const {phone, password, deviceId , type} = this.state;
-            this.props.userLogin({ phone, password, deviceId, type }, this.props.lang);
+            this.props.navigation.navigate('Tabs');
         }
 
     }

@@ -10,6 +10,9 @@ import Register                 from "../components/Register";
 import Terms                    from "../components/Terms";
 import Setting                  from "../components/Setting";
 import InitScreen               from "../components/InitScreen";
+import ForgetPassword           from "../components/ForgetPassword";
+import ActivationCode           from "../components/ActivationCode";
+import NewPassword              from "../components/NewPassword";
 import DrawerCustomization      from "./DrawerCustomization";
 
 const width = Dimensions.get('window').width;
@@ -31,14 +34,32 @@ const drawerNavigator = createDrawerNavigator({
 });
 
 const AppNavigator = createStackNavigator({
-    Register : {
-        screen : Register,
+    Login : {
+        screen : Login,
         navigationOptions: {
             header: null
         }
     },
-    Login : {
-        screen : Login,
+    ForgetPassword : {
+        screen : ForgetPassword,
+        navigationOptions: {
+            header: null
+        }
+    },
+    ActivationCode : {
+        screen : ActivationCode,
+        navigationOptions: {
+            header: null
+        }
+    },
+    NewPassword : {
+        screen : NewPassword,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Register : {
+        screen : Register,
         navigationOptions: {
             header: null
         }
