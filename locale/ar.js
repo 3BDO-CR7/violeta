@@ -165,6 +165,7 @@ const ar = {
     'ok'                        : 'موافقة',
     'refuse'                    : 'رفض',
     'accNum'                    : 'رقم الحساب',
+    'Numacc'                    : 'اسم الحساب',
     'finishDate'                : 'تاريخ الانتهاء',
     'confirmCode'               : 'كود التأكيد',
     'cash'                      : 'كاش',
@@ -221,8 +222,19 @@ const ar = {
     'neworder'                  : 'إضافه طلب جديد',
     'adding'                    : 'الإضافات',
     'naonality'                 : 'الجنسيه',
+    'ennaonality'               : 'إدخل الجنسيه',
     'IDphoto'                   : 'صوره الهويه',
     'licensephoto'              : 'صوره الرخصه',
+    'marequests'                : 'إداره الطلبات',
+    'accounts'                  : 'الحسابات',
+    'whatsay'                   : 'ماذا تريد ان تقول لنا',
+    'support'                   : 'الدعم',
+    'Notify'                    : 'إشعاري بتنبيهات الاداره والطلبات',
+    'Noti'                      : 'تنبيه الاداره',
+    'news'                      : 'جديده',
+    'Underway'                  : 'قيد التنفيذ',
+    'Finished'                  : 'منتهي',
+    'amount'                    : 'إجمالي المبلغ المستحق',
 };
 
 export default ar;

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, I18nManager} from "react-native";
-import {Button, Container, Content, Icon} from 'native-base';
+import {View, Text, Image, TouchableOpacity, I18nManager, ImageBackground} from "react-native";
+import {Button, Container, Content, Header, Icon} from 'native-base';
 import { DrawerItems } from 'react-navigation-drawer';
 
 import styles from "../../assets/style";
@@ -39,37 +39,21 @@ class DrawerCustomization extends Component {
 
     render() {
 
-        let { user } = this.props;
-        if ( user == null )
-            user = {
-                avatar      : '../../assets/img/girl.png',
-                name        : i18n.t('guest'),
-            };
-
         return (
             <Container>
-                <View style={[styles.bg_light_red, styles.width_50, styles.height_full, styles.position_A, styles.left_20, styles.top_0 , styles.zIndexDown]}/>
                 <Content contentContainerStyle={styles.bgFullWidth}>
+                    <ImageBackground source={require('../../assets/img/bgmenu.png')} style={[ styles.Width_100, styles.height_full ]}>
 
-                    <TouchableOpacity
-                        style       = {[styles.width_40 , styles.height_40 , styles.bg_light_red, styles.position_A, styles.centerContext, styles.top_30, styles.SelfRight]}
-                        onPress     = {() => { this.props.navigation.closeDrawer()} }
-                    >
-                        <Icon style={[styles.text_red, styles.textSize_22]} type="AntDesign" name='close' />
-                    </TouchableOpacity>
+                    {/*<TouchableOpacity*/}
+                    {/*    style       = {[styles.width_40 , styles.height_40 , styles.bg_light_red, styles.position_A, styles.centerContext, styles.top_30, styles.SelfRight]}*/}
+                    {/*    onPress     = {() => { this.props.navigation.closeDrawer()} }*/}
+                    {/*>*/}
+                    {/*    <Icon style={[styles.text_red, styles.textSize_22]} type="AntDesign" name='close' />*/}
+                    {/*</TouchableOpacity>*/}
 
-                    <View style={[styles.flexLeft]}>
+                    <View style={[styles.marginVertical_30]}>
 
-                        <View style={[styles.flexLeft, styles.marginVertical_10]}>
-                            <View style={[styles.bg_red, styles.width_150, styles.height_70, styles.position_A, styles.zIndexDown, styles.top_30]}/>
-                            <TouchableOpacity style={[styles.position_R, styles.flexCenter, styles.Width_100, styles.marginHorizontal_25, styles.top_45]} onPress = {() => this.props.navigation.navigate('Profile')}>
-                                {/*<Image style={[styles.width_90, styles.height_90, styles.Radius_5]} source={{ uri: user.avatar }}/>*/}
-                                <Image style={[styles.width_90, styles.height_90, styles.Radius_5]} source={require('../../assets/img/girl.png')}/>
-                                <View onPress={() => this.props.navigation.navigate('profile')}>
-                                    <Text style={[styles.textRegular, styles.textSize_16, styles.text_red]}>{ user.name }</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
+                        <Image style={[styles.flexCenter , styles.width_100, styles.height_100, styles.marginVertical_15]} source={require('../../assets/img/logo_wight.png')} resizeMode={'contain'}/>
 
                     </View>
 
@@ -86,29 +70,31 @@ class DrawerCustomization extends Component {
                              }
 
                              items                          = {this.returnItems()}
-                             activeBackgroundColor          = {styles.bg_red}
+                             activeBackgroundColor          = {styles.overlay_white}
                              inactiveBackgroundColor        = 'transparent'
-                             activeLabelStyle               = {COLORS.red}
+                             activeLabelStyle               = {styles.text_White}
                              labelStyle                     = {styles.drawerLabel}
                              iconContainerStyle             = {styles.drawerIcon}
                              itemStyle                      = {[styles.drawerItemStyle]}
                              itemsContainerStyle            = {styles.marginVertical_10}
                         />
                     </View>
-
+                    </ImageBackground>
                 </Content>
 
                 {
                     (this.props.auth == null || this.props.user == null) ?
 
-                        <TouchableOpacity style={[styles.bg_red, styles.position_A, styles.bottom_40, styles.right_0, styles.height_150, styles.width_40 ]} onPress={() => this.props.navigation.navigate('Login')}>
-                            <Text style={[styles.textRegular, styles.textSize_16, styles.text_White,styles.paddingVertical_5, styles.textCenter, { transform: [{ rotate: '90deg' }], width: 100, height: 90, top: 30 }]}>{i18n.translate('login')}</Text>
+                        <TouchableOpacity style={[styles.position_A, styles.bottom_20, styles.right_20, styles.flexCenter ]} onPress={() => this.props.navigation.navigate('Login')}>
+                            <Icon style={[styles.text_yallow, styles.textSize_20]} type="Entypo" name='login' />
+                            <Text style={[styles.textRegular, styles.textSize_14, styles.text_White,styles.paddingVertical_5, styles.textCenter,]}>{i18n.translate('login')}</Text>
                         </TouchableOpacity>
 
                         :
 
-                        <TouchableOpacity style={[styles.bg_red ,styles.position_A, styles.bottom_40, styles.right_0, styles.height_150, styles.width_40 ]} onPress={() => this.logout()}>
-                            <Text style={[styles.textRegular, styles.textSize_16, styles.text_White,styles.paddingVertical_5, styles.textCenter, { transform: [{ rotate: '90deg' }], width: 100, height: 90, top: 30 }]}>{i18n.translate('logout')}</Text>
+                        <TouchableOpacity style={[styles.position_A, styles.bottom_20, styles.right_20, styles.flexCenter]} onPress={() => this.logout()}>
+                            <Icon style={[styles.text_yallow, styles.textSize_20]} type="AntDesign" name='close' />
+                            <Text style={[styles.textRegular, styles.textSize_14, styles.text_White,styles.paddingVertical_5, styles.textCenter,]}>{i18n.translate('logout')}</Text>
                         </TouchableOpacity>
 
                 }

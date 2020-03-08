@@ -159,6 +159,7 @@ const en = {
     'ok'                                : 'ok',
     'refuse'                            : 'refuse',
     'accNum'                            : 'account number',
+    'Numacc'                            : 'name account',
     'finishDate'                        : 'end date',
     'confirmCode'                       : 'Confirmation Code',
     'cash'                              : 'cash',
@@ -212,8 +213,19 @@ const en = {
     'filrsub'                           : 'choose subcategory',
     'neworder'                          : 'add new order',
     'naonality'                         : 'naonality',
+    'ennaonality'                       : 'enter naonality',
     'IDphoto'                           : 'ID photo',
     'licensephoto'                      : 'license photo',
+    'marequests'                        : 'manage requests',
+    'accounts'                          : 'accounts',
+    'whatsay'                           : 'What do you want to tell us',
+    'support'                           : 'support',
+    'Notify'                            : 'Notify me of management alerts and requests',
+    'Noti'                              : 'Management alert',
+    'news'                              : 'news',
+    'Underway'                          : 'Underway',
+    'Finished'                          : 'Finished',
+    'amount'                            : 'Total amount due',
 
 };
 

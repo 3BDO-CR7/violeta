@@ -37,13 +37,13 @@ class NewPassword extends Component {
         let isError = false;
         let msg = '';
 
-        if (this.state.phone.length <= 0) {
+        if (this.state.password.length < 6) {
             isError = true;
-            msg = i18n.t('namereq');
-        } else if (this.state.codeId === null) {
+            msg = i18n.t('passreq');
+        } else if ( this.state.password.length !== this.state.confirmPassword.length ) {
             isError = true;
-            msg = i18n.t('codeode');
-        } 
+            msg = i18n.t('notmatch');
+        }
         if (msg !== '') {
             Toast.show({
                 text: msg,

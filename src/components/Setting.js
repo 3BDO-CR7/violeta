@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, Switch} from "react-native";
+import {View, Text, Image, TouchableOpacity, Switch, ImageBackground} from "react-native";
 import {
     Container,
     Content,
@@ -7,7 +7,7 @@ import {
     Button,
     Left,
     Body,
-    Title, Form, Textarea, Icon,
+    Title, Form, Textarea, Icon, CheckBox,
 } from 'native-base'
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
@@ -15,105 +15,164 @@ import {connect} from "react-redux";
 import {chooseLang} from "../actions";
 import * as Animatable from 'react-native-animatable';
 import Modal from "react-native-modal";
+import {NavigationEvents} from "react-navigation";
 
 class Setting extends Component {
     constructor(props){
         super(props);
         this.state = {
             spinner                     : false,
-            switchValue                 : false
+            checked                     : false,
+            lang                        : '',
+            langId                      : null,
+            isModalLang                 : false,
+            checkNoty                   : 0,
         }
     }
 
     componentWillMount() {
 
+        const lang  = this.props.lang;
+
+        if(lang === 'ar'){
+            this.setState({ lang : ' عربي '});
+            this.state.langId = 1;
+        }else if (lang === 'en'){
+            this.setState({ lang : 'English' });
+            this.state.langId = 2;
+        }
+
         this.setState({spinner: true});
 
     }
 
-    toggleSwitch = (value) => {
-        this.setState({switchValue: value})
+    toggleModalLang = () => {
+        this.setState({ isModalLang: !this.state.isModalLang});
+    };
+
+    selectLangId(id, name, lang) {
+        this.setState({
+            langId      : id,
+            lang        : name
+        });
+        this.setState({ isModalLang: !this.state.isModalLang});
+        this.props.chooseLang(lang);
+        this.props.navigation.navigate('Setting');
     }
 
     static navigationOptions = () => ({
         header          : null,
-        drawerLabel     : (<Text style={[styles.textRegular, styles.textSize_16]}>{i18n.translate('about')}</Text>) ,
-        drawerIcon      : (<Image style={[styles.headImage]} source={require('../../assets/img/information.png')} resizeMode={'contain'}/>)
+        drawerLabel     : (<Text style={[styles.textRegular, styles.textSize_16, styles.text_White]}>{i18n.translate('setting')}</Text>) ,
+        drawerIcon      : null
     });
+
+    onFocus(){
+        this.componentWillMount();
+    }
 
     render() {
 
         return (
             <Container>
 
+                <NavigationEvents onWillFocus={() => this.onFocus()} />
+
                 <Header style={styles.headerView}>
-                    <Left style={styles.leftIcon}>
-                        <Button style={styles.Button} transparent onPress={() => this.props.navigation.goBack()}>
-                            <Image style={[styles.headImage]} source={require('../../assets/img/left.png')} resizeMode={'contain'}/>
-                        </Button>
-                    </Left>
-                    <Body style={styles.bodyText}>
-                        <Title style={[styles.textRegular , styles.text_red, styles.textSize_16, styles.textLeft, styles.Width_100, styles.paddingHorizontal_5, styles.paddingVertical_0]}>
-                            { i18n.t('setting') }
-                        </Title>
-                    </Body>
+                    <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
+                        <Left style={[ styles.leftIcon ]}>
+                            <Button style={styles.Button} transparent onPress={() => this.props.navigation.goBack()}>
+                                <Icon style={[styles.text_White, styles.textSize_22]} type="AntDesign" name='right' />
+                            </Button>
+                        </Left>
+                        <Body style={[ styles.bodyText ]}>
+                            <Title style={[styles.textRegular , styles.text_White, styles.textSize_16, styles.textCenter, styles.Width_100, { paddingLeft : 0, paddingRight : 0 }]}>
+                                { i18n.t('setting') }
+                            </Title>
+                        </Body>
+                    </ImageBackground>
                 </Header>
 
                 <Content contentContainerStyle={styles.bgFullWidth} style={styles.contentView}>
 
-                    <View style={[ styles.position_A, styles.bg_gray, styles.Width_100, styles.height_70, styles.right_0, styles.top_0, styles.zIndexDown ]}/>
-
-                    <View style={[ styles.position_R, styles.zIndex, styles.bgFullWidth , styles.paddingVertical_10]}>
-                        <View style={[ styles.position_R, styles.marginHorizontal_20, styles.bgFullWidth ]}>
-                            <View style={[ styles.bg_White, styles.paddingHorizontal_10, styles.paddingVertical_10, styles.Border, styles.border_gray, styles.bgFullWidth ]}>
-                                <View style={[styles.marginVertical_20]}>
-
-                                    <View style={[styles.overHidden]}>
-                                        <Animatable.View animation="fadeIn" easing="ease-out" delay={500} style={[ styles.marginVertical_5 ]}>
-                                            <TouchableOpacity
-                                                style       = {[ styles.rowGroup, styles.Border, styles.border_gray, styles.paddingVertical_10, styles.paddingHorizontal_10 ]}
-                                                onPress     = {() => this.props.navigation.navigate('EditProfile')}
-                                            >
-                                                <Text style={[ styles.textRegular, styles.text_light_gray, styles.textSize_14 ]}>{ i18n.t('editdata') }</Text>
-                                                <Icon style={[styles.textSize_20, styles.text_light_gray]} type="AntDesign" name='left' />
-                                            </TouchableOpacity>
-                                        </Animatable.View>
-                                    </View>
-                                    <View style={[styles.overHidden]}>
-                                        <Animatable.View animation="fadeIn" easing="ease-out" delay={600} style={[ styles.marginVertical_5]}>
-                                            <TouchableOpacity
-                                                style       = {[ styles.rowGroup, styles.Border, styles.border_gray, styles.paddingVertical_10, styles.paddingHorizontal_10 ]}
-                                                onPress     = {() => this.props.navigation.navigate('Language')}
-                                            >
-                                                <Text style={[ styles.textRegular, styles.text_light_gray, styles.textSize_14 ]}>{ i18n.t('lang') }</Text>
-                                                <Icon style={[styles.textSize_20, styles.text_light_gray]} type="AntDesign" name='left' />
-                                            </TouchableOpacity>
-                                        </Animatable.View>
-                                    </View>
-
-                                    <View style={[styles.overHidden]}>
-                                        <Animatable.View animation="fadeIn" easing="ease-out" delay={600} style={[ styles.marginVertical_5]}>
-                                            <TouchableOpacity
-                                                style       = {[ styles.rowGroup, styles.Border, styles.border_gray, styles.paddingVertical_10, styles.paddingHorizontal_10 ]}>
-                                                <Text style={[ styles.textRegular, styles.text_light_gray, styles.textSize_14 ]}>{ i18n.t('Available') }</Text>
-                                                <Switch
-                                                    style           = {[ styles.switch ]}
-                                                    onValueChange   = {this.toggleSwitch}
-                                                    value           = {this.state.switchValue}
-                                                    onTintColor     = {'#F00'}
-                                                    thumbTintColor  = {'#fff'}
-                                                    tintColor       = {'#DDD'}
-                                                />
-                                            </TouchableOpacity>
-                                        </Animatable.View>
-                                    </View>
-
-                                </View>
-                            </View>
-                        </View>
+                    <View style={[ styles.paddingHorizontal_15, styles.overHidden, styles.marginVertical_10 ]}>
+                        <Text style={[styles.textSize_12, styles.text_pink, styles.textRegular]}>
+                            {i18n.t('language')} :
+                        </Text>
+                        <TouchableOpacity
+                            style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Width_100, styles.marginVertical_10]}
+                            onPress     = {this.toggleModalLang}
+                        >
+                            <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]}>
+                                {this.state.lang}
+                            </Text>
+                            <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='down' />
+                        </TouchableOpacity>
                     </View>
 
+                    <Modal isVisible={this.state.isModalLang} onBackdropPress={() => this.toggleModalLang()} style={[ styles.bottomCenter, styles.Width_100 ]}>
+                        <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
 
+                            <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
+                                <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
+                                    {i18n.t('language')}
+                                </Text>
+                            </View>
+
+                            <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
+                                <TouchableOpacity
+                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                    onPress             = {() => this.selectLangId(1, 'عربي', 'ar')}
+                                >
+                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                        <CheckBox
+                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                            color               = {styles.text_red}
+                                            selectedColor       = {styles.text_red}
+                                            checked             = {this.state.LangId === 1}
+                                        />
+                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                            عربي
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                    onPress             = {() => this.selectLangId(2, 'English', 'en')}
+                                >
+                                    <View style={[styles.overHidden, styles.rowRight]}>
+                                        <CheckBox
+                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                            color               = {styles.text_red}
+                                            selectedColor       = {styles.text_red}
+                                            checked             = {this.state.LangId === 2}
+                                        />
+                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                            English
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+
+                        </View>
+                    </Modal>
+
+                    <View style={[ styles.paddingHorizontal_15, styles.overHidden, styles.marginVertical_10 ]}>
+                        <Text style={[styles.textSize_12, styles.text_pink, styles.textRegular]}>
+                            {i18n.t('setting')} :
+                        </Text>
+                        <View style = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Width_100, styles.marginVertical_10]}>
+                            <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]}>
+                                {i18n.t('Notify')}
+                            </Text>
+                            <CheckBox
+                                style           = {[styles.checkBox, styles.bg_pink , styles.Border, styles.border_pink]}
+                                color           = {styles.text_White}
+                                selectedColor   = {styles.text_White}
+                                onPress         = {() => this.setState({checkNoty: !this.state.checkNoty})}
+                                checked         = {this.state.checkNoty}
+                            />
+                        </View>
+                    </View>
 
                 </Content>
 
@@ -123,13 +182,13 @@ class Setting extends Component {
     }
 }
 
-export default Setting;
+// export default Setting;
 
-// const mapStateToProps = ({ auth, profile, lang }) => {
-//     return {
-//         auth: auth.user,
-//         user: profile.user,
-//         lang: lang.lang
-//     };
-// };
-// export default connect(mapStateToProps, {})(Home);
+const mapStateToProps = ({ auth, profile, lang }) => {
+    return {
+        // auth: auth.user,
+        // user: profile.user,
+        lang: lang.lang
+    };
+};
+export default connect(mapStateToProps, { chooseLang })(Setting);

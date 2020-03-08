@@ -29,7 +29,14 @@ const styles = ({
     text_black_gray : {
         color               : COLORS.black_gray
     },
+    text_yallow : {
+        color               : COLORS.yallow
+    },
     text_White : {
+        color               : '#FFF'
+    },
+    text_Opacity : {
+      opacity               : 0.5,
         color               : '#FFF'
     },
 
@@ -312,24 +319,24 @@ const styles = ({
         borderColor               : '#FFF'
     },
     border_top : {
-        borderTopWidth            : 3,
-        borderTopColor            : COLORS.red
+        borderTopWidth            : 6,
+        borderTopColor            : COLORS.gray
     },
     border_bottom : {
-        borderBottomWidth         : 3,
-        borderBottomColor         : COLORS.red
+        borderBottomWidth         : 6,
+        borderBottomColor         : COLORS.gray
     },
     border_right : {
-        borderRightWidth          : 3,
-        borderRightColor          : COLORS.red
+        borderRightWidth          : 6,
+        borderRightColor          : COLORS.gray
     },
     border_left : {
-        borderLeftWidth           : 3,
-        borderLeftColor           : COLORS.red
+        borderLeftWidth           : 6,
+        borderLeftColor           : COLORS.gray
     },
     borderRed : {
         borderLeftWidth           : 4,
-        borderLeftColor           : COLORS.red,
+        borderLeftColor           : COLORS.gray,
         borderTopWidth            : 1,
         borderBottomWidth         : 1,
         borderRightWidth          : 1,
@@ -896,12 +903,12 @@ const styles = ({
         elevation           : 0,
         borderBottomWidth   : 0,
         alignItems          : 'center',
-        height              : 95
+        height              : 95,
     },
     bodyText : {
         position            : 'relative',
         alignItems          : 'center',
-        flex                : 1
+        flex                : 1,
     },
     leftIcon : {
         flex                : 0,
@@ -923,14 +930,14 @@ const styles = ({
         paddingLeft             : 0,
         paddingBottom           : 0,
         borderRadius            : 3,
-        paddingRight            : 3
+        paddingRight            : 2
     },
 
     // Style Drawer
 
     drawerItemStyle: {
         paddingHorizontal       : 20,
-        marginVertical          : 10
+        marginVertical          : 10,
     },
 
     // Style Swiper
@@ -977,7 +984,34 @@ const styles = ({
     shapeBlock : {
         top                 : -10,
         left                : -10,
-    }
+    },
+
+    // Tabs Styles
+
+    view_Footer : {
+        height                  : 50,
+        borderTopLeftRadius     : 0,
+        borderTopRightRadius    : 0,
+        borderTopWidth          : 0,
+        backgroundColor         : "#FFF",
+        shadowColor             : "#363636",
+        shadowOffset            : { width: 0, height: 1},
+        shadowOpacity           : 0.22,
+        shadowRadius            : 2.22,
+        elevation               : 3,
+    },
+    footer_Tab  : {
+        height                  : 50,
+        borderTopLeftRadius     : 0,
+        borderTopRightRadius    : 0,
+        borderTopWidth          : 0,
+        backgroundColor         : "#74255c",
+        // shadowColor             : "#363636",
+        // shadowOffset            : { width: 0, height: 1},
+        // shadowOpacity           : 0.22,
+        shadowRadius            : 2.22,
+        elevation               : 2,
+    },
 
 });
 

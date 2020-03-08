@@ -38,6 +38,7 @@ class Register extends Component {
             email                       : '',
             phone                       : '',
             password                    : '',
+            confirmPassword             : '',
         }
     }
 
@@ -45,21 +46,27 @@ class Register extends Component {
         let isError = false;
         let msg = '';
 
-        if (this.state.phone.name <= 0) {
+        if (this.state.name.length <= 0) {
             isError = true;
             msg = i18n.t('entername');
-        }else if (this.state.phone.email <= 0) {
+        }else if (this.state.email.length <= 0) {
             isError = true;
             msg = i18n.t('entermail');
         }else if (this.state.phone.length <= 0) {
             isError = true;
             msg = i18n.t('namereq');
-        } else if (this.state.codeId === null) {
+        } else if (this.state.nationalityId === null) {
             isError = true;
-            msg = i18n.t('codeode');
-        } else if (this.state.password.length <= 0) {
+            msg = i18n.t('ennaonality');
+        } else if (this.state.countryId === null) {
             isError = true;
-            msg = i18n.t('pass');
+            msg = i18n.t('choosecity');
+        } else if (this.state.password.length < 6) {
+            isError = true;
+            msg = i18n.t('passreq');
+        } else if ( this.state.password.length !== this.state.confirmPassword.length ) {
+            isError = true;
+            msg = i18n.t('notmatch');
         }
         if (msg !== '') {
             Toast.show({

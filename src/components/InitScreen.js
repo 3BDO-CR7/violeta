@@ -18,7 +18,7 @@ class InitScreen extends Component {
         // else
         //     this.props.navigation.navigate('drawerNavigator');
 
-        this.props.navigation.navigate('Login');
+        this.props.navigation.navigate('drawerNavigator');
 
         AsyncStorage.getItem('init').then(init => {
             if (init != 'true'){
@@ -27,6 +27,7 @@ class InitScreen extends Component {
             }
 
         });
+
     }
 
     render() {

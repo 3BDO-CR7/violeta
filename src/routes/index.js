@@ -7,12 +7,17 @@ import {Dimensions, I18nManager} from "react-native";
 import Home                     from "../components/Home";
 import Login                    from "../components/Login";
 import Register                 from "../components/Register";
-import Terms                    from "../components/Terms";
 import Setting                  from "../components/Setting";
 import InitScreen               from "../components/InitScreen";
 import ForgetPassword           from "../components/ForgetPassword";
 import ActivationCode           from "../components/ActivationCode";
 import NewPassword              from "../components/NewPassword";
+import CallUs                   from "../components/CallUs";
+import Notification             from "../components/Notification";
+import Profile                  from "../components/Profile";
+import ManageRequests           from "../components/ManageRequests";
+import Accounts                 from "../components/Accounts";
+import Tabs                     from "../components/Tabs";
 import DrawerCustomization      from "./DrawerCustomization";
 
 const width = Dimensions.get('window').width;
@@ -20,7 +25,9 @@ const drawerCust = (props) => (<DrawerCustomization {...props} />);
 
 const drawerNavigator = createDrawerNavigator({
     Home                : Home,
-    Terms               : Terms,
+    Setting             : Setting,
+    CallUs              : CallUs,
+    Notification        : Notification,
 },
     {
     initialRouteName    : 'Home',
@@ -29,11 +36,59 @@ const drawerNavigator = createDrawerNavigator({
     drawerCloseRoute    : 'DrawerClose',
     gesturesEnabled     : false,
     drawerToggleRoute   : 'DrawerToggle',
-    drawerWidth         : '50%',
+    drawerWidth         : '80%',
     contentComponent    : drawerCust
 });
 
 const AppNavigator = createStackNavigator({
+    Profile : {
+        screen : Profile,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Accounts : {
+        screen : Accounts,
+        navigationOptions: {
+            header: null
+        }
+    },
+    ManageRequests : {
+        screen : ManageRequests,
+        navigationOptions: {
+            header: null
+        }
+    },
+    InitScreen : {
+        screen : InitScreen,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Notification : {
+        screen : Notification,
+        navigationOptions: {
+            header: null
+        }
+    },
+    drawerNavigator: {
+        screen: drawerNavigator,
+        navigationOptions: {
+            header: null
+        }
+    },
+    CallUs : {
+        screen : CallUs,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Tabs : {
+        screen : Tabs,
+        navigationOptions: {
+            header: null
+        }
+    },
     Login : {
         screen : Login,
         navigationOptions: {
@@ -60,18 +115,6 @@ const AppNavigator = createStackNavigator({
     },
     Register : {
         screen : Register,
-        navigationOptions: {
-            header: null
-        }
-    },
-    drawerNavigator: {
-        screen: drawerNavigator,
-        navigationOptions: {
-            header: null
-        }
-    },
-    InitScreen : {
-        screen : InitScreen,
         navigationOptions: {
             header: null
         }
