@@ -7,7 +7,7 @@ import styles from "../../assets/style";
 import COLORS from '../../src/consts/colors'
 import i18n from "../../locale/i18n";
 import {connect} from "react-redux";
-import {chooseLang} from "../actions";
+import {logout, tempAuth} from "../actions";
 
 class DrawerCustomization extends Component {
     constructor(props){
@@ -31,9 +31,9 @@ class DrawerCustomization extends Component {
     }
 
     logout(){
-        // this.props.navigation.closeDrawer();
-        this.props.navigation.navigate('loginAs');
-        this.props.logout(this.props.auth.data.token);
+        this.props.navigation.closeDrawer();
+        this.props.navigation.navigate('Login');
+        this.props.logout(this.props.auth.id);
         this.props.tempAuth();
     }
 
@@ -93,7 +93,7 @@ class DrawerCustomization extends Component {
                         :
 
                         <TouchableOpacity style={[styles.position_A, styles.bottom_20, styles.right_20, styles.flexCenter]} onPress={() => this.logout()}>
-                            <Icon style={[styles.text_yallow, styles.textSize_20]} type="AntDesign" name='close' />
+                            <Icon style={[styles.text_yallow, styles.textSize_20]} type="MaterialCommunityIcons" name='logout' />
                             <Text style={[styles.textRegular, styles.textSize_14, styles.text_White,styles.paddingVertical_5, styles.textCenter,]}>{i18n.translate('logout')}</Text>
                         </TouchableOpacity>
 
@@ -106,9 +106,9 @@ class DrawerCustomization extends Component {
 
 const mapStateToProps = ({ auth, profile }) => {
     return {
-        // auth    : auth.user,
-        // user    : profile.user
+        auth    : auth.user,
+        user    : profile.user
     };
 };
 
-export default connect(mapStateToProps, { chooseLang })(DrawerCustomization);
+export default connect(mapStateToProps, { logout, tempAuth })(DrawerCustomization);

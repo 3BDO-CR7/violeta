@@ -1,3 +1,3 @@
 export default {
-    url: 'https://korbaah.com/public/api/',
+    url: 'http://foleta.aait-sa.com/api/',
 };

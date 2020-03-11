@@ -235,6 +235,9 @@ const ar = {
     'Underway'                  : 'قيد التنفيذ',
     'Finished'                  : 'منتهي',
     'amount'                    : 'إجمالي المبلغ المستحق',
+    'numorederdo'               : 'عدد الطلبات المنفذه',
+    'numorederfi'               : 'عدد الطلبات الملغاه',
+    'orderund'                  : 'حاله الطلب تحت التنفيذ',
 };
 
 export default ar;

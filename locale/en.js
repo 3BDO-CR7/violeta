@@ -226,6 +226,9 @@ const en = {
     'Underway'                          : 'Underway',
     'Finished'                          : 'Finished',
     'amount'                            : 'Total amount due',
+    'numorederdo'                       : 'Number of requests executed',
+    'numorederfi'                       : 'Number of orders canceled',
+    'orderund'                          : 'Order Status: Under construction',
 
 };
 

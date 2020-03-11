@@ -1,35 +1,93 @@
 import React, { Component } from "react";
 import {View, Text, Image, TouchableOpacity, ImageBackground} from "react-native";
-import {
-    Container,
-    Content,
-    Header,
-    Button,
-    Left,
-    Body,
-    Title, Form, Textarea, Right, Icon
-} from 'native-base'
+import {Container, Content, Header, Button, Left, Body, Title, Icon, Toast} from 'native-base'
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
-import {connect} from "react-redux";
-import {chooseLang} from "../actions";
 import * as Animatable from 'react-native-animatable';
-import Modal from "react-native-modal";
+import Spinner from 'react-native-loading-spinner-overlay';
+import {connect} from "react-redux";
+import {chooseLang, profile, userLogin} from "../actions";
+
+import * as Location from 'expo-location'
+import * as Permissions from 'expo-permissions'
+import CONST from '../consts';
 import Tabs from './Tabs';
+import axios from "axios";
 
 class Home extends Component {
     constructor(props){
         super(props);
         this.state = {
             spinner                     : false,
+            orders                      : [],
+            latitude                    : null,
+            longitude                   : null,
         }
     }
 
     componentWillMount() {
 
         this.setState({spinner: true});
+        this.getLocation();
+
+        console.log('this_props_hhhh', this.props.user)
 
     }
+
+    getOrders () {
+        axios({
+            url         : CONST.url + 'orders',
+            method      : 'POST',
+            data : {
+                lang        : this.props.lang,
+                status      : 2,
+                lat         : this.state.latitude,
+                lng         : this.state.longitude,
+                user_id     : this.props.user.id ,
+            }
+        }).then(response => {
+
+            this.setState({
+                orders                  : response.data.data,
+                spinner                 : false
+            });
+
+        }).catch(err => {
+            console.log(err);
+            this.setState({spinner : false});
+        })
+    }
+
+    getLocation = async () => {
+
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+        if (status !== 'granted') {
+            Toast.show({
+                text: 'Permission to access location was denied',
+                duration    : 4000,
+                type        : 'danger',
+                textStyle   : {
+                    color       : "white" ,
+                    textAlign   : 'center'
+                }
+            });
+        }else {
+            return await Location.getCurrentPositionAsync({
+                enableHighAccuracy  : false,
+                maximumAge          : 15000
+            }).then((position) => {
+                this.setState({
+                    'longitude' : position.coords.longitude,
+                    'latitude'  : position.coords.latitude,
+                    spinner     : false
+                },()=>{
+                    setTimeout(()=>{ this.getOrders() },500)
+                });
+            });
+        }
+
+    };
 
     static navigationOptions = () => ({
         header          : null,
@@ -37,10 +95,18 @@ class Home extends Component {
         drawerIcon      : null
     });
 
-    render() {
+    onFocus() {
+        this.componentWillMount();
+    }
 
+    render() {
         return (
             <Container>
+
+                <Spinner
+                    visible     = {this.state.spinner}
+                    textStyle   = {styles.text_White}
+                />
 
                 <Header style={styles.headerView}>
                     <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
@@ -59,83 +125,59 @@ class Home extends Component {
 
                 <Content contentContainerStyle={styles.bgFullWidth} style={[ { backgroundColor : '#f4f4f4', paddingVertical : 20 }]}>
 
-                    <View style={[ styles.overHidden ]}>
-                        <Animatable.View animation="zoomIn" easing="ease-out" delay={300} style={[styles.flexCenter]}>
-                            <TouchableOpacity style={[ styles.bg_White, styles.paddingVertical_10, styles.paddingHorizontal_10 , styles.rowGroup , styles.Width_90, styles.flexCenter, styles.Radius_5, styles.marginVertical_5]}>
-                                <View style={[ styles.flex_30, styles.height_90, styles.Radius_5 ]}>
-                                    <Image style={[styles.flexCenter , styles.Width_100, styles.height_full, styles.Radius_5]} source={require('../../assets/img/2.png')} resizeMode={'cover'}/>
-                                </View>
-                                <View style={[ styles.flex_70, styles.paddingVertical_10, styles.paddingHorizontal_10]}>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12 ]}>بيرجر بيف</Text>
-                                    <View style={[ styles.rowGroup, styles.marginVertical_5 ]}>
-                                        <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>حاله الطلب : تحت التنفيذ</Text>
-                                        <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>SR 2000</Text>
-                                    </View>
-                                    <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12, styles.textLeft ]}>12 , 2020 Aug</Text>
-                                </View>
-                                <View style={[ styles.bg_gray, styles.paddingHorizontal_5, styles.paddingVertical_5, styles.Width_100, styles.marginVertical_5, styles.rowCenter ]}>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter ]}>
-                                        { i18n.t('numorders') } :
-                                    </Text>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter, styles.marginHorizontal_5 ]}>
-                                        233
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        </Animatable.View>
-                    </View>
+                    {
+                        (this.state.latitude || this.state.longitude !== null) ?
 
-                    <View style={[ styles.overHidden ]}>
-                        <Animatable.View animation="zoomIn" easing="ease-out" delay={300} style={[styles.flexCenter]}>
-                            <TouchableOpacity style={[ styles.bg_White, styles.paddingVertical_10, styles.paddingHorizontal_10 , styles.rowGroup , styles.Width_90, styles.flexCenter, styles.Radius_5, styles.marginVertical_5]}>
-                                <View style={[ styles.flex_30, styles.height_90, styles.Radius_5 ]}>
-                                    <Image style={[styles.flexCenter , styles.Width_100, styles.height_full, styles.Radius_5]} source={require('../../assets/img/2.png')} resizeMode={'cover'}/>
+                            this.state.orders.map((order, i) => (
+                                <View style={[ styles.overHidden ]}>
+                                    <Animatable.View animation="fadeInUp" easing="ease-out" key={i} delay={300} style={[styles.flexCenter]}>
+                                        <TouchableOpacity
+                                            style   = {[ styles.bg_White, styles.paddingVertical_10, styles.paddingHorizontal_10 , styles.rowGroup , styles.Width_90, styles.flexCenter, styles.Radius_5, styles.marginVertical_5]}
+                                            onPress = {() => this.props.navigation.navigate('OrderDetails', { order_id : order.id })}>
+                                            <View style={[ styles.flex_30, styles.height_90, styles.Radius_5 ]}>
+                                                <Image style={[styles.flexCenter , styles.Width_100, styles.height_full, styles.Radius_5]} source={{ uri : order.image }}/>
+                                            </View>
+                                            <View style={[ styles.flex_70, styles.paddingVertical_10, styles.paddingHorizontal_10]}>
+                                                <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12 ]}> { order.store } </Text>
+                                                <View style={[ styles.rowGroup, styles.marginVertical_5 ]}>
+                                                    <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>{ i18n.t('orderund') }</Text>
+                                                    <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>SR { order.price } </Text>
+                                                </View>
+                                                <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12, styles.textLeft ]}>{ order.date }</Text>
+                                            </View>
+                                            <View style={[ styles.bg_gray, styles.paddingHorizontal_5, styles.paddingVertical_5, styles.Width_100, styles.marginVertical_5, styles.rowCenter ]}>
+                                                <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter ]}>
+                                                    { i18n.t('orderund') } :
+                                                </Text>
+                                                <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter, styles.marginHorizontal_5 ]}>
+                                                    { order.number }
+                                                </Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </Animatable.View>
                                 </View>
-                                <View style={[ styles.flex_70, styles.paddingVertical_10, styles.paddingHorizontal_10]}>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12 ]}>بيرجر بيف</Text>
-                                    <View style={[ styles.rowGroup, styles.marginVertical_5 ]}>
-                                        <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>حاله الطلب : تحت التنفيذ</Text>
-                                        <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>SR 2000</Text>
-                                    </View>
-                                    <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12, styles.textLeft ]}>12 , 2020 Aug</Text>
-                                </View>
-                                <View style={[ styles.bg_gray, styles.paddingHorizontal_5, styles.paddingVertical_5, styles.Width_100, styles.marginVertical_5, styles.rowCenter ]}>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter ]}>
-                                        { i18n.t('numorders') } :
-                                    </Text>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter, styles.marginHorizontal_5 ]}>
-                                        233
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        </Animatable.View>
-                    </View>
+                            ))
 
-                    <View style={[ styles.overHidden ]}>
-                        <Animatable.View animation="zoomIn" easing="ease-out" delay={300} style={[styles.flexCenter]}>
-                            <TouchableOpacity style={[ styles.bg_White, styles.paddingVertical_10, styles.paddingHorizontal_10 , styles.rowGroup , styles.Width_90, styles.flexCenter, styles.Radius_5, styles.marginVertical_5]}>
-                                <View style={[ styles.flex_30, styles.height_90, styles.Radius_5 ]}>
-                                    <Image style={[styles.flexCenter , styles.Width_100, styles.height_full, styles.Radius_5]} source={require('../../assets/img/2.png')} resizeMode={'cover'}/>
-                                </View>
-                                <View style={[ styles.flex_70, styles.paddingVertical_10, styles.paddingHorizontal_10]}>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12 ]}>بيرجر بيف</Text>
-                                    <View style={[ styles.rowGroup, styles.marginVertical_5 ]}>
-                                        <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>حاله الطلب : تحت التنفيذ</Text>
-                                        <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12 ]}>SR 2000</Text>
+                            :
+
+                            <View style={[ styles.overHidden ]}>
+                                <Animatable.View animation="fadeInUp" easing="ease-out" delay={300} style={[styles.flexCenter, styles.Width_90]}>
+                                    <View style={[ styles.paddingHorizontal_10, styles.Width_100, styles.flexCenter, styles.height_full ]}>
+                                        <Text style={[ styles.textRegular, styles.text_black ]}>
+                                            يرجي تحديد موقعك لعرض الطلبات القريبه منك
+                                        </Text>
+                                        <TouchableOpacity
+                                            style       = {[styles.bg_pink, styles.Width_100, styles.flexCenter, styles.marginVertical_10, styles.height_45, styles.Radius_50]}
+                                            onPress     = {()=> {this.getLocation()}}>
+                                            <Text style = {[styles.textRegular, styles.textSize_14, styles.text_White]}>
+                                                {i18n.translate('Location')}
+                                            </Text>
+                                        </TouchableOpacity>
                                     </View>
-                                    <Text style={[ styles.textRegular, styles.text_black_gray, styles.textSize_12, styles.textLeft ]}>12 , 2020 Aug</Text>
-                                </View>
-                                <View style={[ styles.bg_gray, styles.paddingHorizontal_5, styles.paddingVertical_5, styles.Width_100, styles.marginVertical_5, styles.rowCenter ]}>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter ]}>
-                                        { i18n.t('numorders') } :
-                                    </Text>
-                                    <Text style={[ styles.textRegular, styles.text_black, styles.textSize_12, styles.textCenter, styles.marginHorizontal_5 ]}>
-                                        233
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        </Animatable.View>
-                    </View>
+                                </Animatable.View>
+                            </View>
+
+                    }
 
                 </Content>
 
@@ -147,13 +189,13 @@ class Home extends Component {
     }
 }
 
-export default Home;
+// export default Home;
 
-// const mapStateToProps = ({ auth, profile, lang }) => {
-//     return {
-//         auth: auth.user,
-//         user: profile.user,
-//         lang: lang.lang
-//     };
-// };
-// export default connect(mapStateToProps, {})(Home);
+const mapStateToProps = ({ auth, profile, lang }) => {
+    return {
+        auth        : auth.user,
+        user        : profile.user,
+        lang        : lang.lang
+    };
+};
+export default connect(mapStateToProps, {userLogin, profile, chooseLang})(Home);

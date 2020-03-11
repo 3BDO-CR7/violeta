@@ -1,14 +1,6 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, Switch, ImageBackground} from "react-native";
-import {
-    Container,
-    Content,
-    Header,
-    Button,
-    Left,
-    Body,
-    Title, Form, Textarea, Icon, CheckBox,Right
-} from 'native-base'
+import {View, Text, Image, TouchableOpacity, ImageBackground} from "react-native";
+import {Container, Content, Header, Button, Body, Title, Icon,Right} from 'native-base'
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
 import {connect} from "react-redux";
@@ -16,6 +8,7 @@ import {chooseLang} from "../actions";
 import * as Animatable from 'react-native-animatable';
 import Modal from "react-native-modal";
 import {NavigationEvents} from "react-navigation";
+import Lightbox from 'react-native-lightbox';
 import Tabs from "./Tabs";
 
 class Profile extends Component {
@@ -33,6 +26,8 @@ class Profile extends Component {
             photoLicenseUser            : '../../assets/img/girl.png',
         }
     }
+
+
 
     componentWillMount() {
 
@@ -78,19 +73,62 @@ class Profile extends Component {
                         </View>
 
                         <View style={[ styles.border_gray, styles.Border, styles.paddingVertical_10, styles.paddingHorizontal_10, styles.marginVertical_20, styles.Width_100 ]}>
-                            <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('phone') } : </Text>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.phoneUser } </Text>
+                            <View style={[ styles.position_R, styles.overHidden ]}>
+                                <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('phone') } : </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.phoneUser } </Text>
+                                </View>
+                                <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('naonality') } : </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.nationUser } </Text>
+                                </View>
+                                <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100, styles.textLeft ]}>{ i18n.t('city') } : </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.countryUser } </Text>
+                                </View>
                             </View>
-                            <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('naonality') } : </Text>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.nationUser } </Text>
-                            </View>
-                            <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100, styles.textLeft ]}>{ i18n.t('city') } : </Text>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.countryUser } </Text>
+                            <View style={[ styles.rowGroup, styles.paddingHorizontal_10, styles.paddingVertical_10, styles.marginVertical_10, styles.Width_100 ]}>
+                                <View style={[ styles.overHidden ]}>
+                                    <Text style={[styles.textSize_13, styles.text_black, styles.textRegular, styles.textCenter, styles.marginVertical_5]}>{ i18n.t('PhotoLicense') }</Text>
+                                    <TouchableOpacity style={[ styles.position_R, styles.overHidden, styles.Radius_5 ]}>
+                                        <View style={[ styles.position_A, styles.top_0, styles.right_0, styles.Width_100, styles.height_full, styles.overlay_black, styles.flexCenter, styles.zIndex ]}>
+                                            <Icon style={[styles.textSize_16, styles.text_White]} type="FontAwesome" name='search-plus' />
+                                        </View>
+                                        <Image style={[styles.width_120, styles.height_80]} source={require('../../assets/img/girl.png')}/>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={[ styles.overHidden ]}>
+                                    <Text style={[styles.textSize_13, styles.text_black, styles.textRegular, styles.textCenter, styles.marginVertical_5]}>{ i18n.t('PhotoID') }</Text>
+                                    <TouchableOpacity style={[ styles.position_R, styles.overHidden, styles.Radius_5 ]}>
+                                        <View style={[ styles.position_A, styles.top_0, styles.right_0, styles.Width_100, styles.height_full, styles.overlay_black, styles.flexCenter, styles.zIndex ]}>
+                                            <Icon style={[styles.textSize_16, styles.text_White]} type="FontAwesome" name='search-plus' />
+                                        </View>
+                                        <Image style={[styles.width_120, styles.height_80]} source={require('../../assets/img/girl.png')}/>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
+
+                        <View style={[ styles.border_gray, styles.Border, styles.paddingVertical_10, styles.paddingHorizontal_10, styles.marginVertical_20, styles.Width_100 ]}>
+                            <View style={[ styles.position_R, styles.overHidden ]}>
+                                <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
+                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black]}>{ i18n.t('numorederdo') } : </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black, styles.marginHorizontal_10 ]}> 33 </Text>
+                                </View>
+                                <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
+                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black]}>{ i18n.t('numorederfi') } : </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black, styles.marginHorizontal_10 ]}> 44 </Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity style={[ styles.border_gray, styles.Border, styles.paddingVertical_10, styles.marginVertical_5, styles.Width_100, styles.flexCenter ]}>
+                            <Text style={[ styles.textRegular, styles.text_red, styles.textSize_14 ]}> { i18n.t('changepass') } </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[  styles.border_gray, styles.Border, styles.paddingVertical_10, styles.marginVertical_5, styles.Width_100, styles.flexCenter ]}>
+                            <Text style={[ styles.textRegular, styles.text_red, styles.textSize_14 ]}> { i18n.t('logout') } </Text>
+                        </TouchableOpacity>
 
                     </View>
 

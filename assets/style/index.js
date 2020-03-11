@@ -359,10 +359,10 @@ const styles = ({
 
     boxShadow : {
         shadowColor             : "#363636",
-        shadowOffset            : { width: 0, height: 1},
-        shadowOpacity           : 0.22,
-        shadowRadius            : 2.22,
-        elevation               : 3,
+        shadowOffset            : { width: 0, height: 0.5},
+        shadowOpacity           : 0.10,
+        shadowRadius            : 2.0,
+        elevation               : 2,
     },
 
     // Styles Flex Box
@@ -548,6 +548,12 @@ const styles = ({
     },
     width_150 : {
         width                       : 150
+    },
+    width_120 : {
+        width                       : 120
+    },
+    width_130 : {
+        width                       : 130
     },
     width_200 : {
         width                       : 200

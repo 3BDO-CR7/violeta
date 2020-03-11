@@ -41,6 +41,18 @@ const drawerNavigator = createDrawerNavigator({
 });
 
 const AppNavigator = createStackNavigator({
+    InitScreen : {
+        screen : InitScreen,
+        navigationOptions: {
+            header: null
+        }
+    },
+    drawerNavigator: {
+        screen: drawerNavigator,
+        navigationOptions: {
+            header: null
+        }
+    },
     Profile : {
         screen : Profile,
         navigationOptions: {
@@ -59,20 +71,8 @@ const AppNavigator = createStackNavigator({
             header: null
         }
     },
-    InitScreen : {
-        screen : InitScreen,
-        navigationOptions: {
-            header: null
-        }
-    },
     Notification : {
         screen : Notification,
-        navigationOptions: {
-            header: null
-        }
-    },
-    drawerNavigator: {
-        screen: drawerNavigator,
         navigationOptions: {
             header: null
         }
