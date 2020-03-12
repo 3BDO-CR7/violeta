@@ -125,6 +125,10 @@ class Accounts extends Component {
         this.componentWillMount();
     }
 
+    static navigationOptions = () => ({
+        drawerLabel : () => null,
+    });
+
     render() {
 
         return (

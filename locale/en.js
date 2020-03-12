@@ -228,7 +228,18 @@ const en = {
     'amount'                            : 'Total amount due',
     'numorederdo'                       : 'Number of requests executed',
     'numorederfi'                       : 'Number of orders canceled',
-    'orderund'                          : 'Order Status: Under construction',
+    'orderund'                          : 'Order Status',
+    'round'                             : 'on my way',
+    'gogo'                              : 'Please select your location to view orders near you',
+    'ryal'                              : 'R.S',
+    'acceptedyet'                       : 'This request has not been accepted yet',
+    'Customersite'                      : 'Customer site',
+    'Storelocation'                     : 'Store location',
+    'information'                       : 'Customer contact information',
+    'shop'                              : 'Contact information with the shop',
+    'Bill'                              : 'Bill',
+    'acc'                               : 'accepted',
+    'Totalorder'                        : 'Total order',
 
 };
 

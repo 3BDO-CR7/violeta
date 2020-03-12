@@ -7,20 +7,22 @@ import {
     Button,
     Left,
     Body,
-    Title, Form, Textarea, Icon, Right,
+    Title, Form, Textarea, Icon, Toast,
 } from 'native-base'
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
+import Spinner from 'react-native-loading-spinner-overlay';
 import {connect} from "react-redux";
-import {chooseLang} from "../actions";
-import * as Animatable from 'react-native-animatable';
-import Modal from "react-native-modal";
+import {chooseLang, profile, userLogin} from "../actions";
+import CONST from '../consts';
+import axios from "axios";
+import {NavigationEvents} from "react-navigation";
 
 class CallUs extends Component {
     constructor(props){
         super(props);
         this.state = {
-            spinner                     : false,
+            spinner                     : true,
             Error                       : '',
             massage                     : ''
         }
@@ -28,7 +30,7 @@ class CallUs extends Component {
 
     componentWillMount() {
 
-        this.setState({spinner: true});
+        this.setState({spinner: false});
 
     }
 
@@ -43,14 +45,19 @@ class CallUs extends Component {
         }
 
         if (msg !== '') {
-            this.setState({ Error : msg});
+            Toast.show({
+                text        : msg,
+                type        : "danger",
+                duration    : 3000,
+                textStyle   : {
+                    color       : "white",
+                    fontFamily  : 'cairo',
+                    textAlign   : 'center',
+                }
+            });
         }
 
         return isError;
-    };
-
-    toggleModalComment = () => {
-        this.setState({ isModalComment  : !this.state.isModalComment});
     };
 
     sentComment(){
@@ -58,7 +65,38 @@ class CallUs extends Component {
         const err = this.validate();
 
         if (!err){
-            this.setState({ isModalComment  : !this.state.isModalComment});
+
+            this.setState({spinner: true});
+
+            axios({
+                url         : CONST.url + 'contactUs',
+                method      : 'POST',
+                data : {
+                    lang            : this.props.lang,
+                    message         : this.state.massage,
+                    user_id         : this.props.user.id
+                }
+            }).then(response => {
+
+                this.setState({spinner : false, message : ''});
+
+                Toast.show({
+                    text        : response.data.message,
+                    type        : response.data.status === '1' ? "success" : "danger",
+                    duration    : 3000,
+                    textStyle     : {
+                        color           : "white",
+                        fontFamily      : 'cairo',
+                        textAlign       : 'center',
+                    }
+                });
+
+                this.props.navigation.navigate('Home');
+
+            }).catch(err => {
+                console.log(err);
+                this.setState({spinner : false});
+            });
         }
 
     }
@@ -69,10 +107,20 @@ class CallUs extends Component {
         drawerIcon      : null
     });
 
+    onFocus() {
+        this.componentWillMount();
+    }
+
     render() {
 
         return (
             <Container>
+
+                <Spinner
+                    visible     = {this.state.spinner}
+                    textStyle   = {styles.text_White}
+                />
+                <NavigationEvents onWillFocus={() => this.onFocus()} />
 
                 <Header style={styles.headerView}>
                     <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
@@ -131,13 +179,11 @@ class CallUs extends Component {
     }
 }
 
-export default CallUs;
-
-// const mapStateToProps = ({ auth, profile, lang }) => {
-//     return {
-//         auth: auth.user,
-//         user: profile.user,
-//         lang: lang.lang
-//     };
-// };
-// export default connect(mapStateToProps, {})(Home);
+const mapStateToProps = ({ auth, profile, lang }) => {
+    return {
+        auth        : auth.user,
+        user        : profile.user,
+        lang        : lang.lang
+    };
+};
+export default connect(mapStateToProps, {userLogin, profile, chooseLang})(CallUs);

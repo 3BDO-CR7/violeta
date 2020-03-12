@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import {View, Text, Image, TouchableOpacity, AsyncStorage, KeyboardAvoidingView,ImageBackground} from "react-native";
 import {
-    Body,
-    Button, CheckBox,
+    Body, CheckBox,
     Container,
     Content,
     Form,
@@ -10,8 +9,6 @@ import {
     Icon,
     Input,
     Item,
-    Left,
-    Right,
     Title,
     Toast,
 } from 'native-base'

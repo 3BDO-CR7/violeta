@@ -122,6 +122,7 @@ class Login extends Component {
 
         }
 
+
         if (newProps.auth !== null) {
             this.setState({spinner: false});
             Toast.show({

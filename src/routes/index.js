@@ -17,6 +17,8 @@ import Notification             from "../components/Notification";
 import Profile                  from "../components/Profile";
 import ManageRequests           from "../components/ManageRequests";
 import Accounts                 from "../components/Accounts";
+import EditProfile              from "../components/EditProfile";
+import DetailsOrder             from "../components/DetailsOrder";
 import Tabs                     from "../components/Tabs";
 import DrawerCustomization      from "./DrawerCustomization";
 
@@ -28,6 +30,9 @@ const drawerNavigator = createDrawerNavigator({
     Setting             : Setting,
     CallUs              : CallUs,
     Notification        : Notification,
+    Accounts            : Accounts,
+    ManageRequests      : ManageRequests,
+    Profile             : Profile,
 },
     {
     initialRouteName    : 'Home',
@@ -43,6 +48,24 @@ const drawerNavigator = createDrawerNavigator({
 const AppNavigator = createStackNavigator({
     InitScreen : {
         screen : InitScreen,
+        navigationOptions: {
+            header: null
+        }
+    },
+    EditProfile : {
+        screen : EditProfile,
+        navigationOptions: {
+            header: null
+        }
+    },
+    CallUs : {
+        screen : CallUs,
+        navigationOptions: {
+            header: null
+        }
+    },
+    DetailsOrder : {
+        screen : DetailsOrder,
         navigationOptions: {
             header: null
         }
@@ -73,12 +96,6 @@ const AppNavigator = createStackNavigator({
     },
     Notification : {
         screen : Notification,
-        navigationOptions: {
-            header: null
-        }
-    },
-    CallUs : {
-        screen : CallUs,
         navigationOptions: {
             header: null
         }

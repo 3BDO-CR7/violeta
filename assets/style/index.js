@@ -411,6 +411,9 @@ const styles = ({
         flexDirection       : 'row',
         alignSelf           : 'flex-start',
     },
+    row : {
+        flexDirection       : 'row',
+    },
     rowGroup : {
         flexDirection       : "row",
         justifyContent      : "space-between",
