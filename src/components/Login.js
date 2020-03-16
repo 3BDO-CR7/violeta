@@ -109,22 +109,13 @@ class Login extends Component {
                 // this.props.profile  ({user_id  : this.props.auth.data.id, lang : this.props.lang });
                 this.props.navigation.navigate('drawerNavigator');
             }
+            this.setState({spinner: false});
 
         }
 
 
         if (newProps.auth !== null) {
             this.setState({spinner: false});
-            Toast.show({
-                text        : newProps.auth.msg,
-                type        : newProps.auth.status === '1' ? "success" : "danger",
-                duration    : 3000,
-                textStyle     : {
-                    color           : "white",
-                    fontFamily      : 'cairo',
-                    textAlign       : 'center',
-                }
-            });
         }
 
     }

@@ -727,6 +727,9 @@ const styles = ({
     height_full : {
         height                  : '100%'
     },
+    Height_90 : {
+        height                  : '90%'
+    },
     minHeight : {
         minHeight               :  150
     },

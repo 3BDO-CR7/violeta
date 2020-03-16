@@ -7,13 +7,12 @@ import {
     Button,
     Left,
     Body,
-    Title, Form, Textarea, Icon, CheckBox, Toast,
+    Title, Icon, CheckBox, Toast,
 } from 'native-base'
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
 import {connect} from "react-redux";
 import {chooseLang, profile, userLogin} from "../actions";
-import * as Animatable from 'react-native-animatable';
 import Modal from "react-native-modal";
 import {NavigationEvents} from "react-navigation";
 import axios from "axios";
@@ -28,7 +27,7 @@ class Setting extends Component {
             lang                        : '',
             langId                      : null,
             isModalLang                 : false,
-            checkNoty                   : false,
+            checkNoty                   : '',
         }
     }
 
@@ -60,14 +59,20 @@ class Setting extends Component {
                 spinner                 : false,
             });
 
-            console.log('response.data.noti', response.data.data.noti)
-            console.log('checkNoty', this.state.checkNoty)
+
+            console.log('cose', this.state.checkNoty);
 
         }).catch(err => {
             console.log(err);
             this.setState({spinner : false});
         })
 
+
+    }
+
+    componentWillReceiveProps(){
+
+        console.log('cose', this.state.checkNoty);
 
     }
 
@@ -130,6 +135,9 @@ class Setting extends Component {
     }
 
     render() {
+        console.log('cose render', this.state.checkNoty);
+
+        const soce = this.state.checkNoty;
 
         return (
             <Container>
@@ -228,8 +236,7 @@ class Setting extends Component {
                                 color           = {styles.text_White}
                                 selectedColor   = {styles.text_White}
                                 onPress         = {() => this.selectNoty()}
-                                checked         = {this.state.checkNoty}
-                                value           = {this.state.checkNoty}
+                                checked         = {soce}
                             />
                         </View>
                     </View>

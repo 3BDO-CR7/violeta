@@ -6,17 +6,19 @@ import i18n from "../../locale/i18n";
 import {connect} from "react-redux";
 import {chooseLang, profile, userLogin, logout, tempAuth} from "../actions";
 import * as Animatable from 'react-native-animatable';
-import Lightbox from 'react-native-lightbox';
 import Tabs from "./Tabs";
 import { NavigationEvents } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
+import Modal from "react-native-modal";
 
 
 class Profile extends Component {
     constructor(props){
         super(props);
         this.state = {
-            spinner                     : true,
+            spinner                                     : true,
+            modelImageID                                : false,
+            modelImageLicense                           : false,
         }
     }
 
@@ -32,6 +34,14 @@ class Profile extends Component {
 
         this.props.profile  ({user_id  : this.props.auth.data.id, lang : this.props.lang });
 
+    }
+
+    openImageId(img) {
+        if(img === 'imgID'){
+            this.setState({ modelImageID: !this.state.modelImageID});
+        }else if (img === 'imgLicense') {
+            this.setState({ modelImageLicense: !this.state.modelImageLicense});
+        }
     }
 
 
@@ -51,6 +61,10 @@ class Profile extends Component {
 
             <Container>
 
+                <Spinner
+                    visible     = {this.state.spinner}
+                    textStyle   = {styles.text_White}
+                />
                 <NavigationEvents onWillFocus={() => this.onFocus()} />
 
                 <Header style={styles.headerView}>
@@ -101,7 +115,10 @@ class Profile extends Component {
                                 <View style={[ styles.overHidden ]}>
                                     <Text style={[styles.textSize_13, styles.text_black, styles.textRegular, styles.textCenter, styles.marginVertical_5]}>{ i18n.t('PhotoLicense') }</Text>
                                     <Animatable.View animation="zoomIn" easing="ease-out" delay={300} style={[styles.flexCenter]}>
-                                        <TouchableOpacity style={[ styles.position_R, styles.overHidden, styles.Radius_5 ]}>
+                                        <TouchableOpacity
+                                            style={[ styles.position_R, styles.overHidden, styles.Radius_5 ]}
+                                            onPress  = {() => this.openImageId('imgID')}
+                                        >
                                             <View style={[ styles.position_A, styles.top_0, styles.right_0, styles.Width_100, styles.height_full, styles.overlay_black, styles.flexCenter, styles.zIndex ]}>
                                                 <Icon style={[styles.textSize_16, styles.text_White]} type="FontAwesome" name='search-plus' />
                                             </View>
@@ -112,7 +129,10 @@ class Profile extends Component {
                                 <View style={[ styles.overHidden ]}>
                                     <Text style={[styles.textSize_13, styles.text_black, styles.textRegular, styles.textCenter, styles.marginVertical_5]}>{ i18n.t('PhotoID') }</Text>
                                     <Animatable.View animation="zoomIn" easing="ease-out" delay={300} style={[styles.flexCenter]}>
-                                        <TouchableOpacity style={[ styles.position_R, styles.overHidden, styles.Radius_5 ]}>
+                                        <TouchableOpacity
+                                            style    = {[ styles.position_R, styles.overHidden, styles.Radius_5 ]}
+                                            onPress  = {() => this.openImageId('imgLicense')}
+                                        >
                                             <View style={[ styles.position_A, styles.top_0, styles.right_0, styles.Width_100, styles.height_full, styles.overlay_black, styles.flexCenter, styles.zIndex ]}>
                                                 <Icon style={[styles.textSize_16, styles.text_White]} type="FontAwesome" name='search-plus' />
                                             </View>
@@ -122,6 +142,29 @@ class Profile extends Component {
                                 </View>
                             </View>
                         </View>
+
+                        <Modal isVisible={this.state.modelImageID} onBackdropPress={() => this.openImageId('imgID')} style={[ styles.flexCenter, styles.Width_100, styles.height_full ]}>
+                            <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.Height_90, styles.paddingVertical_10, styles.position_R]}>
+                                <Image style={[styles.Width_90, styles.height_full, styles.flexCenter]}  source={{ uri : id_image }}/>
+                                <TouchableOpacity
+                                    style       = {[ styles.top_0, styles.position_A, styles.width_40, styles.height_40, styles.flexCenter, styles.right_10, styles.bg_pink, styles.Radius_50 ]}
+                                    onPress     = {() => this.openImageId('imgID')}
+                                >
+                                    <Icon style={[styles.text_White, styles.textSize_22]} type="AntDesign" name='close' />
+                                </TouchableOpacity>
+                            </View>
+                        </Modal>
+                        <Modal isVisible={this.state.modelImageLicense} onBackdropPress={() => this.openImageId('imgLicense')} style={[ styles.flexCenter, styles.Width_100, styles.height_full ]}>
+                            <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.Height_90, styles.paddingVertical_10, styles.position_R]}>
+                                <Image style={[styles.Width_90, styles.height_full, styles.flexCenter]}  source={{ uri : license_image }}/>
+                                <TouchableOpacity
+                                    style       = {[ styles.top_0, styles.position_A, styles.width_40, styles.height_40, styles.flexCenter, styles.right_10, styles.bg_pink, styles.Radius_50 ]}
+                                    onPress     = {() => this.openImageId('imgLicense')}
+                                >
+                                    <Icon style={[styles.text_White, styles.textSize_22]} type="AntDesign" name='close' />
+                                </TouchableOpacity>
+                            </View>
+                        </Modal>
 
                         <View style={[ styles.border_gray, styles.Border, styles.paddingVertical_10, styles.paddingHorizontal_10, styles.marginVertical_20, styles.Width_100 ]}>
                             <View style={[ styles.position_R, styles.overHidden ]}>

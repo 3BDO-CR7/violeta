@@ -136,8 +136,6 @@ class Register extends Component {
 
         if (!err){
 
-            this.setState({ spinner: false });
-
             const data = {
                 name                : this.state.name,
                 email               : this.state.email,
@@ -152,6 +150,8 @@ class Register extends Component {
             };
 
             this.props.register(data, this.props);
+
+            this.setState({ spinner: false });
 
         }else {
 
@@ -420,9 +420,10 @@ class Register extends Component {
     }
 }
 
-const mapStateToProps = ({ lang }) => {
+const mapStateToProps = ({ lang, register }) => {
     return {
-        lang        : lang.lang
+        lang        : lang.lang,
+        loading     : register.loader
     };
 };
 export default connect(mapStateToProps, {register})(Register);

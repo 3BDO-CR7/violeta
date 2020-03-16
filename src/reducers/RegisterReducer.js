@@ -5,7 +5,7 @@ export default (state = INITIAL_STATE, action) => {
         case 'register':{
             return {
                 register    : action.payload,
-                loader      : action.payload.status == 1 ? false : true
+                loader      : action.payload.status == 1 ? true : false
             };
         }
 
