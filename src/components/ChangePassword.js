@@ -125,9 +125,14 @@ class ChangePassword extends Component {
                 />
 
                 <Header style={styles.headerView}>
-                    <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader ]}>
-                        <Body style={styles.bodyText}>
-                            <Title style={[styles.textRegular , styles.text_White, styles.textSize_16, styles.textCenter, styles.Width_100, styles.paddingHorizontal_5, styles.paddingVertical_0]}>
+                    <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
+                        <Left style={[ styles.leftIcon ]}>
+                            <Button style={styles.Button} transparent onPress={() => this.props.navigation.goBack()}>
+                                <Icon style={[styles.text_White, styles.textSize_22]} type="AntDesign" name='right' />
+                            </Button>
+                        </Left>
+                        <Body style={[ styles.bodyText ]}>
+                            <Title style={[styles.textRegular , styles.text_White, styles.textSize_16, styles.textCenter, styles.Width_100, { paddingLeft : 0, paddingRight : 0 }]}>
                                 { i18n.t('newpass') }
                             </Title>
                         </Body>

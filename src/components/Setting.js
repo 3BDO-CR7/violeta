@@ -27,7 +27,7 @@ class Setting extends Component {
             lang                        : '',
             langId                      : null,
             isModalLang                 : false,
-            checkNoty                   : '',
+            check                       : '',
         }
     }
 
@@ -55,24 +55,22 @@ class Setting extends Component {
         }).then(response => {
 
             this.setState({
-                checkNoty               : response.data.data.noti,
                 spinner                 : false,
             });
 
+            console.log('cose api', response.data.data.noti);
+            if (response.data.data.noti === 'true'){
+                this.setState({check : true});
+            } else {
+                this.setState({check : false});
+            }
 
-            console.log('cose', this.state.checkNoty);
 
         }).catch(err => {
             console.log(err);
             this.setState({spinner : false});
         })
 
-
-    }
-
-    componentWillReceiveProps(){
-
-        console.log('cose', this.state.checkNoty);
 
     }
 
@@ -94,33 +92,39 @@ class Setting extends Component {
 
         this.setState({spinner : true});
 
-        axios({
-            url         : CONST.url + 'changeNotiStatus',
-            method      : 'POST',
-            data : {
-                lang        : this.props.lang,
-                user_id     : this.props.auth.data.id,
-                noti        : this.state.checkNoty
-            }
-        }).then(response => {
+        this.setState({ check : !this.state.check });
 
-            Toast.show({
-                text        : response.data.msg,
-                type        : response.data.status === '1' ? "success" : "danger",
-                duration    : 3000,
-                textStyle     : {
-                    color           : "white",
-                    fontFamily      : 'cairo',
-                    textAlign       : 'center',
+
+        setTimeout(()=> {
+
+            axios({
+                url         : CONST.url + 'changeNotiStatus',
+                method      : 'POST',
+                data : {
+                    lang        : this.props.lang,
+                    user_id     : this.props.auth.data.id,
+                    noti        : this.state.check
                 }
-            });
+            }).then(response => {
 
-            this.setState({ checkNoty : !this.state.checkNoty });
+                Toast.show({
+                    text        : response.data.msg,
+                    type        : response.data.status === '1' ? "success" : "danger",
+                    duration    : 3000,
+                    textStyle     : {
+                        color           : "white",
+                        fontFamily      : 'cairo',
+                        textAlign       : 'center',
+                    }
+                });
 
-        }).catch(err => {
-            console.log(err);
-            this.setState({spinner : false});
-        })
+
+            }).catch(err => {
+                console.log(err);
+                this.setState({spinner : false});
+            })
+
+        } , 1000);
 
     }
 
@@ -135,9 +139,6 @@ class Setting extends Component {
     }
 
     render() {
-        console.log('cose render', this.state.checkNoty);
-
-        const soce = this.state.checkNoty;
 
         return (
             <Container>
@@ -236,7 +237,7 @@ class Setting extends Component {
                                 color           = {styles.text_White}
                                 selectedColor   = {styles.text_White}
                                 onPress         = {() => this.selectNoty()}
-                                checked         = {soce}
+                                checked         = {this.state.check}
                             />
                         </View>
                     </View>

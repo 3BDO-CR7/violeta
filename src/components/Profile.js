@@ -4,7 +4,7 @@ import {Container, Content, Header, Button, Body, Title, Icon,Right} from 'nativ
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
 import {connect} from "react-redux";
-import {chooseLang, profile, userLogin, logout, tempAuth} from "../actions";
+import {chooseLang, profile, logout, tempAuth} from "../actions";
 import * as Animatable from 'react-native-animatable';
 import Tabs from "./Tabs";
 import { NavigationEvents } from "react-navigation";
@@ -22,7 +22,7 @@ class Profile extends Component {
         }
     }
 
-    logout(){
+    logOut(){
         this.props.navigation.navigate('Login');
         this.props.logout(this.props.auth.data.id);
         this.props.tempAuth();
@@ -187,7 +187,7 @@ class Profile extends Component {
 
                         <TouchableOpacity
                             style       = {[  styles.border_gray, styles.Border, styles.paddingVertical_10, styles.marginVertical_5, styles.Width_100, styles.flexCenter ]}
-                            onPress     = {() => this.logout()}
+                            onPress     = {() => this.logOut()}
                         >
                             <Text style={[ styles.textRegular, styles.text_red, styles.textSize_14 ]}> { i18n.t('logout') } </Text>
                         </TouchableOpacity>
@@ -212,4 +212,4 @@ const mapStateToProps = ({ auth, profile, lang }) => {
         lang        : lang.lang
     };
 };
-export default connect(mapStateToProps, {userLogin, profile, chooseLang, logout, tempAuth})(Profile);
+export default connect(mapStateToProps, {profile, chooseLang, logout, tempAuth})(Profile);
