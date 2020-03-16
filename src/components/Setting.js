@@ -7,32 +7,36 @@ import {
     Button,
     Left,
     Body,
-    Title, Form, Textarea, Icon, CheckBox,
+    Title, Form, Textarea, Icon, CheckBox, Toast,
 } from 'native-base'
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
 import {connect} from "react-redux";
-import {chooseLang} from "../actions";
+import {chooseLang, profile, userLogin} from "../actions";
 import * as Animatable from 'react-native-animatable';
 import Modal from "react-native-modal";
 import {NavigationEvents} from "react-navigation";
+import axios from "axios";
+import CONST from "../consts";
 
 class Setting extends Component {
     constructor(props){
         super(props);
         this.state = {
             spinner                     : false,
-            checked                     : false,
+            checked                     : '',
             lang                        : '',
             langId                      : null,
             isModalLang                 : false,
-            checkNoty                   : 0,
+            checkNoty                   : false,
         }
     }
 
     componentWillMount() {
 
         const lang  = this.props.lang;
+
+        this.setState({spinner: true});
 
         if(lang === 'ar'){
             this.setState({ lang : ' عربي '});
@@ -42,12 +46,33 @@ class Setting extends Component {
             this.state.langId = 2;
         }
 
-        this.setState({spinner: true});
+        axios({
+            url         : CONST.url + 'notiStatus',
+            method      : 'POST',
+            data : {
+                lang        : this.props.lang,
+                user_id     : this.props.auth.data.id,
+            }
+        }).then(response => {
+
+            this.setState({
+                checkNoty               : response.data.data.noti,
+                spinner                 : false,
+            });
+
+            console.log('response.data.noti', response.data.data.noti)
+            console.log('checkNoty', this.state.checkNoty)
+
+        }).catch(err => {
+            console.log(err);
+            this.setState({spinner : false});
+        })
+
 
     }
 
     toggleModalLang = () => {
-        this.setState({ isModalLang: !this.state.isModalLang});
+        this.setState({ isModalLang: !this.state.isModalLang });
     };
 
     selectLangId(id, name, lang) {
@@ -58,6 +83,40 @@ class Setting extends Component {
         this.setState({ isModalLang: !this.state.isModalLang});
         this.props.chooseLang(lang);
         this.props.navigation.navigate('Setting');
+    }
+
+    selectNoty() {
+
+        this.setState({spinner : true});
+
+        axios({
+            url         : CONST.url + 'changeNotiStatus',
+            method      : 'POST',
+            data : {
+                lang        : this.props.lang,
+                user_id     : this.props.auth.data.id,
+                noti        : this.state.checkNoty
+            }
+        }).then(response => {
+
+            Toast.show({
+                text        : response.data.msg,
+                type        : response.data.status === '1' ? "success" : "danger",
+                duration    : 3000,
+                textStyle     : {
+                    color           : "white",
+                    fontFamily      : 'cairo',
+                    textAlign       : 'center',
+                }
+            });
+
+            this.setState({ checkNoty : !this.state.checkNoty });
+
+        }).catch(err => {
+            console.log(err);
+            this.setState({spinner : false});
+        })
+
     }
 
     static navigationOptions = () => ({
@@ -168,8 +227,9 @@ class Setting extends Component {
                                 style           = {[styles.checkBox, styles.bg_pink , styles.Border, styles.border_pink]}
                                 color           = {styles.text_White}
                                 selectedColor   = {styles.text_White}
-                                onPress         = {() => this.setState({checkNoty: !this.state.checkNoty})}
+                                onPress         = {() => this.selectNoty()}
                                 checked         = {this.state.checkNoty}
+                                value           = {this.state.checkNoty}
                             />
                         </View>
                     </View>
@@ -186,9 +246,9 @@ class Setting extends Component {
 
 const mapStateToProps = ({ auth, profile, lang }) => {
     return {
-        // auth: auth.user,
-        // user: profile.user,
+        auth: auth.user,
+        user: profile.user,
         lang: lang.lang
     };
 };
-export default connect(mapStateToProps, { chooseLang })(Setting);
+export default connect(mapStateToProps, { userLogin, profile, chooseLang })(Setting);

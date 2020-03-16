@@ -42,7 +42,7 @@ class ManageRequests extends Component {
                 status      : this.state.active,
                 lat         : this.state.latitude,
                 lng         : this.state.longitude,
-                user_id     : this.props.user.id ,
+                user_id     : this.props.auth.data.id ,
             }
         }).then(response => {
 
@@ -101,7 +101,7 @@ class ManageRequests extends Component {
                 status      : id,
                 lat         : this.state.latitude,
                 lng         : this.state.longitude,
-                user_id     : this.props.user.id ,
+                user_id     : this.props.auth.data.id ,
             }
         }).then(response => {
 

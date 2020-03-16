@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, AsyncStorage, KeyboardAvoidingView,ImageBackground} from "react-native";
+import {View, Text, Image, TouchableOpacity, KeyboardAvoidingView,ImageBackground} from "react-native";
 import {
     Body,
-    Button, CheckBox,
     Container,
     Content,
     Form,
@@ -18,16 +17,13 @@ import {
 import styles from '../../assets/style';
 import i18n from '../../locale/i18n'
 import * as Animatable from 'react-native-animatable';
-import {NavigationEvents} from "react-navigation";
-import Modal from "react-native-modal";
+import axios from "axios";
+import CONST from "../consts";
 
 class NewPassword extends Component {
     constructor(props){
         super(props);
         this.state = {
-            code                        : i18n.t('codeocun'),
-            codeId                      : null,
-            isModalCode                 : false,
             confirmPassword             : '',
             password                    : '',
         }
@@ -66,35 +62,50 @@ class NewPassword extends Component {
         const err = this.validate();
 
         if (!err){
-            this.props.navigation.navigate('Login');
+
+            axios({
+                url         : CONST.url + 'updateForgetPassword',
+                method      : 'POST',
+                data : {
+                    lang        : this.props.lang,
+                    password    : this.state.password,
+                    user_id     : this.props.navigation.state.params.user_id,
+                }
+            }).then(response => {
+
+                if(response.data.status == 1){
+                    this.props.navigation.navigate('Login');
+                }
+
+                this.setState({spinner : false});
+
+                Toast.show({
+                    text        : response.data.message,
+                    type        : response.data.status === '1' ? "success" : "danger",
+                    duration    : 3000,
+                    textStyle     : {
+                        color           : "white",
+                        fontFamily      : 'cairo',
+                        textAlign       : 'center',
+                    }
+                });
+
+            }).catch(err => {
+                console.log(err);
+                this.setState({spinner : false});
+            })
+
+        }else {
+
+            this.setState({spinner: false});
+
         }
 
-    }
-
-    toggleModalCode = () => {
-        this.setState({ isModalCode: !this.state.isModalCode});
-    };
-
-    selectCodeId(id, name) {
-        this.setState({
-            codeId      : id,
-            code        : name
-        });
-        this.setState({ isModalCode: !this.state.isModalCode});
     }
 
     async componentWillMount() {
 
 
-    }
-
-    componentWillReceiveProps(newProps){
-
-
-    }
-
-    onFocus(){
-        this.componentWillMount();
     }
 
     render() {
@@ -112,8 +123,6 @@ class NewPassword extends Component {
                         </Body>
                     </ImageBackground>
                 </Header>
-
-                <NavigationEvents onWillFocus={() => this.onFocus()} />
 
                 <ImageBackground source={require('../../assets/img/bg.png')} style={[ styles.bgFullWidth,]}>
 
@@ -165,84 +174,6 @@ class NewPassword extends Component {
 
                                 </Form>
                             </KeyboardAvoidingView>
-                            <Modal isVisible={this.state.isModalCode} onBackdropPress={() => this.toggleModalCode()} style={[ styles.bottomCenter, styles.Width_100 ]}>
-                                <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
-
-                                    <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
-                                        <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
-                                            {i18n.t('codeocun')}
-                                        </Text>
-                                    </View>
-
-                                    <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(1, '+666')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 1}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +666
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(2, '+777')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 2}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +777
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(3, '+888')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 3}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +777
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                            onPress             = {() => this.selectCodeId(4, '+1000')}
-                                        >
-                                            <View style={[styles.overHidden, styles.rowRight]}>
-                                                <CheckBox
-                                                    style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                    color               = {styles.text_red}
-                                                    selectedColor       = {styles.text_red}
-                                                    checked             = {this.state.codeId === 4}
-                                                />
-                                                <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                    +777
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </View>
-
-                                </View>
-                            </Modal>
                         </View>
                     </Content>
 
@@ -256,12 +187,3 @@ class NewPassword extends Component {
 
 export default NewPassword;
 
-// const mapStateToProps = ({ auth, profile, lang }) => {
-//     return {
-//         loading     : auth.loading,
-//         auth        : auth.user,
-//         user        : profile.user,
-//         lang        : lang.lang
-//     };
-// };
-// export default connect(mapStateToProps, {  })(Login);

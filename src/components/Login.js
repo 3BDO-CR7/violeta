@@ -95,18 +95,6 @@ class Login extends Component {
 
     }
 
-    // toggleModalCode = () => {
-    //     this.setState({ isModalCode: !this.state.isModalCode});
-    // };
-    //
-    // selectCodeId(id, name) {
-    //     this.setState({
-    //         codeId      : id,
-    //         code        : name
-    //     });
-    //     this.setState({ isModalCode: !this.state.isModalCode});
-    // }
-
     componentWillReceiveProps(newProps){
 
         this.setState({spinner: true});
@@ -116,7 +104,9 @@ class Login extends Component {
             if (this.state.userId === null){
                 this.setState({ userId: newProps.auth.data.id });
             }else {
-                this.props.profile( newProps.auth.data.id , this.props.lang );
+                this.props.profile( { user_id  : newProps.auth.data.id , lang : this.props.lang } );
+
+                // this.props.profile  ({user_id  : this.props.auth.data.id, lang : this.props.lang });
                 this.props.navigation.navigate('drawerNavigator');
             }
 

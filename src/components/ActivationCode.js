@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, AsyncStorage, KeyboardAvoidingView,ImageBackground} from "react-native";
+import {View, Text, Image, TouchableOpacity, KeyboardAvoidingView,ImageBackground} from "react-native";
 import {
     Body,
     Button, CheckBox,
@@ -35,7 +35,10 @@ class ActivationCode extends Component {
 
         if (this.state.code.length <= 0) {
             isError = true;
-            msg = i18n.t('codeN');
+            msg     = i18n.t('codeN');
+        }else if(parseInt(this.state.code) !== this.props.navigation.state.params.code){
+            isError = true;
+            msg     = i18n.t('codeNotCorrect');
         }
         if (msg !== '') {
             Toast.show({
@@ -59,18 +62,17 @@ class ActivationCode extends Component {
         const err = this.validate();
 
         if (!err){
-            this.props.navigation.navigate('NewPassword');
+            this.props.navigation.navigate('NewPassword', { user_id : this.props.navigation.state.params.user_id});
+            this.setState({spinner: false});
+        }else {
+            this.setState({spinner: false});
         }
 
     }
 
     async componentWillMount() {
 
-
-    }
-
-    componentWillReceiveProps(newProps){
-
+        alert(this.props.navigation.state.params.code)
 
     }
 
@@ -85,10 +87,15 @@ class ActivationCode extends Component {
             <Container>
 
                 <Header style={styles.headerView}>
-                    <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader ]}>
-                        <Body style={styles.bodyText}>
-                            <Title style={[styles.textRegular , styles.text_White, styles.textSize_16, styles.textCenter, styles.Width_100, styles.paddingHorizontal_5, styles.paddingVertical_0]}>
-                                { i18n.t('actcode') }
+                    <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
+                        <Left style={[ styles.leftIcon ]}>
+                            <Button style={styles.Button} transparent onPress={() => this.props.navigation.goBack()}>
+                                <Icon style={[styles.text_White, styles.textSize_22]} type="AntDesign" name='right' />
+                            </Button>
+                        </Left>
+                        <Body style={[ styles.bodyText ]}>
+                            <Title style={[styles.textRegular , styles.text_White, styles.textSize_16, styles.textCenter, styles.Width_100, { paddingLeft : 0, paddingRight : 0 }]}>
+                                { i18n.t('code') }
                             </Title>
                         </Body>
                     </ImageBackground>

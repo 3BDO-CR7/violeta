@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, AsyncStorage, KeyboardAvoidingView,ImageBackground} from "react-native";
+import {
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    AsyncStorage,
+    KeyboardAvoidingView,
+    ImageBackground,
+    ScrollView
+} from "react-native";
 import {
     Body, CheckBox,
     Container,
@@ -15,27 +24,36 @@ import {
 import styles from '../../assets/style';
 import i18n from '../../locale/i18n'
 import * as Animatable from 'react-native-animatable';
+import {chooseLang, profile, register, updateProfile} from "../actions";
+import {connect} from "react-redux";
 import {NavigationEvents} from "react-navigation";
+import Spinner from 'react-native-loading-spinner-overlay';
 import Modal from "react-native-modal";
+import * as Permissions from "expo-permissions";
+import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
+import CONST from "../consts";
 
 class Register extends Component {
     constructor(props){
         super(props);
         this.state = {
-            code                        : i18n.t('codeocun'),
-            codeId                      : null,
-            isModalCode                 : false,
-            nationality                 : i18n.t('naonality'),
-            nationalityId               : null,
-            isModalNationality          : false,
             country                     : i18n.t('city'),
             countryId                   : null,
             isModalCountry              : false,
+            imgUser                     : '',
+            photoIdUser                 : i18n.translate('IDphoto'),
+            photoLicenseUser            : i18n.translate('licensephoto'),
             name                        : '',
             email                       : '',
             phone                       : '',
+            nationality                 : '',
             password                    : '',
             confirmPassword             : '',
+            cities                      : [],
+            userImageBase64             : null,
+            idBase64                    : null,
+            licImageBase64              : null,
         }
     }
 
@@ -48,16 +66,22 @@ class Register extends Component {
             msg = i18n.t('entername');
         }else if (this.state.email.length <= 0) {
             isError = true;
-            msg = i18n.t('entermail');
+            msg = i18n.t('entmail');
         }else if (this.state.phone.length <= 0) {
             isError = true;
             msg = i18n.t('namereq');
-        } else if (this.state.nationalityId === null) {
+        } else if (this.state.nationality.length <= 0) {
             isError = true;
             msg = i18n.t('ennaonality');
         } else if (this.state.countryId === null) {
             isError = true;
             msg = i18n.t('choosecity');
+        } else if (this.state.idBase64 === null) {
+            isError = true;
+            msg = i18n.t('enIDphoto');
+        } else if (this.state.licImageBase64 === null) {
+            isError = true;
+            msg = i18n.t('enlicensephoto');
         } else if (this.state.password.length < 6) {
             isError = true;
             msg = i18n.t('passreq');
@@ -80,41 +104,89 @@ class Register extends Component {
         return isError;
     };
 
-    onLoginPressed() {
+    async componentWillMount() {
 
         this.setState({spinner: true});
+
+        axios({
+            url         : CONST.url + 'NewCities',
+            method      : 'POST',
+            data : {
+                lang        : this.props.lang,
+            }
+        }).then(response => {
+
+            this.setState({
+                cities                  : response.data.data,
+                spinner                 : false
+            });
+
+        }).catch(err => {
+            console.log(err);
+            this.setState({spinner : false});
+        })
+
+    }
+
+    onLoginPressed (){
+
+        this.setState({ spinner: true });
 
         const err = this.validate();
 
         if (!err){
-            this.props.navigation.navigate('Tabs');
+
+            this.setState({ spinner: false });
+
+            const data = {
+                name                : this.state.name,
+                email               : this.state.email,
+                phone               : this.state.phone,
+                nationality         : this.state.nationality,
+                city_id             : this.state.countryId,
+                password            : this.state.password,
+                lang                : this.props.lang,
+                id_image            : this.state.idBase64,
+                license_image       : this.state.licImageBase64,
+                avatar              : this.state.userImageBase64,
+            };
+
+            this.props.register(data, this.props);
+
+        }else {
+
+            this.setState({ spinner: false });
+
         }
 
     }
 
-    toggleModalCode = () => {
-        this.setState({ isModalCode: !this.state.isModalCode});
+    askPermissionsAsync = async () => {
+        await Permissions.askAsync(Permissions.CAMERA);
+        await Permissions.askAsync(Permissions.CAMERA_ROLL);
     };
 
-    selectCodeId(id, name) {
-        this.setState({
-            codeId      : id,
-            code        : name
-        });
-        this.setState({ isModalCode: !this.state.isModalCode});
-    }
+    _pickImage = async (key) => {
 
-    toggleModalNationality = () => {
-        this.setState({ isModalNationality: !this.state.isModalNationality});
+        this.askPermissionsAsync();
+
+        let result      = await ImagePicker.launchImageLibraryAsync({
+            aspect      : [4, 3],
+            base64      : true,
+            quality     : 0.5
+        });
+
+        if (!result.cancelled) {
+            if (key === 'imgUser'){
+                this.setState({ imgUser: result.uri ,userImageBase64:result.base64 });
+            }else if(key === 'photoIdUser'){
+                this.setState({ photoIdUser: result.uri ,idBase64:result.base64 });
+            }else if(key === 'photoLicenseUser'){
+                this.setState({ photoLicenseUser: result.uri ,licImageBase64:result.base64 });
+            }
+        }
+
     };
-
-    selectnationalityId(id, name) {
-        this.setState({
-            nationalityId       : id,
-            nationality         : name
-        });
-        this.setState({ isModalNationality: !this.state.isModalNationality});
-    }
 
     toggleModalCountry = () => {
         this.setState({ isModalCountry: !this.state.isModalCountry});
@@ -128,16 +200,6 @@ class Register extends Component {
         this.setState({ isModalCountry: !this.state.isModalCountry});
     }
 
-    async componentWillMount() {
-
-
-    }
-
-    componentWillReceiveProps(newProps){
-
-
-    }
-
     onFocus(){
         this.componentWillMount();
     }
@@ -147,6 +209,12 @@ class Register extends Component {
         return (
 
             <Container>
+
+                <Spinner
+                    visible     = {this.state.spinner}
+                    textStyle   = {styles.text_White}
+                />
+                <NavigationEvents onWillFocus={() => this.onFocus()} />
 
                 <Header style={styles.headerView}>
                     <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader ]}>
@@ -158,18 +226,27 @@ class Register extends Component {
                     </ImageBackground>
                 </Header>
 
-                <NavigationEvents onWillFocus={() => this.onFocus()} />
-
                 <ImageBackground source={require('../../assets/img/bg.png')} style={[ styles.bgFullWidth,]}>
 
                     <Content contentContainerStyle={styles.bgFullWidth}>
                         <View style={[styles.position_R, styles.bgFullWidth, styles.marginVertical_15, styles.flexCenter, styles.Width_100]}>
-                            <View style={[styles.overHidden, styles.marginVertical_15]}>
-                                <Animatable.View animation="bounceIn" easing="ease-out" delay={500} style={[styles.flexCenter]}>
-                                    <Image style={[styles.icoImage]} source={require('../../assets/img/icon.png')}/>
-                                </Animatable.View>
-                            </View>
                             <KeyboardAvoidingView behavior={'padding'} style={[styles.Width_100]}>
+
+                                <View style={[ styles.marginVertical_10 , styles.flexCenter ]}>
+                                    <Animatable.View animation="zoomIn" easing="ease-out" delay={300} style={[styles.flexCenter]}>
+                                        <View style={[ styles.position_R, styles.width_100, styles.height_100, styles.Radius_50  ]}>
+                                            <View style={[ styles.overHidden ]}>
+                                                <Image style={[styles.width_100, styles.height_100, styles.Radius_50]} source={{ uri : this.state.imgUser }}/>
+                                            </View>
+                                            <TouchableOpacity
+                                                style       = {[ styles.position_A,styles.width_100, styles.height_100, styles.Radius_50, styles.flexCenter, styles.top_0, styles.right_0, styles.zIndex, styles.overlay_white, styles.Border, styles.border_pink  ]}
+                                                onPress     = {() => this._pickImage('imgUser')}>
+                                                <Icon style={[styles.text_pink, styles.textSize_22]} type="Entypo" name='camera' />
+                                            </TouchableOpacity>
+                                        </View>
+                                    </Animatable.View>
+                                </View>
+
                                 <Form style={[styles.Width_100, styles.flexCenter, styles.marginVertical_10, styles.Width_90]}>
 
                                     <View style={[styles.position_R, styles.overHidden, styles.height_70, styles.flexCenter]}>
@@ -212,168 +289,20 @@ class Register extends Component {
                                                 />
                                             </Item>
                                         </View>
-                                        <View style={[styles.position_R, styles.marginHorizontal_5]}>
-                                            <TouchableOpacity
-                                                style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_5, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.width_90]}
-                                                onPress     = {this.toggleModalCode}
-                                            >
-                                                <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
-                                                    {this.state.code}
-                                                </Text>
-                                                <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='down' />
-                                            </TouchableOpacity>
-                                        </View>
-                                        <Modal isVisible={this.state.isModalCode} onBackdropPress={() => this.toggleModalCode()} style={[ styles.bottomCenter, styles.Width_100 ]}>
-                                            <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
-
-                                                <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
-                                                    <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
-                                                        {i18n.t('codeocun')}
-                                                    </Text>
-                                                </View>
-
-                                                <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
-                                                    <TouchableOpacity
-                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                        onPress             = {() => this.selectCodeId(1, '+666')}
-                                                    >
-                                                        <View style={[styles.overHidden, styles.rowRight]}>
-                                                            <CheckBox
-                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                                color               = {styles.text_red}
-                                                                selectedColor       = {styles.text_red}
-                                                                checked             = {this.state.codeId === 1}
-                                                            />
-                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                                +666
-                                                            </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                        onPress             = {() => this.selectCodeId(2, '+777')}
-                                                    >
-                                                        <View style={[styles.overHidden, styles.rowRight]}>
-                                                            <CheckBox
-                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                                color               = {styles.text_red}
-                                                                selectedColor       = {styles.text_red}
-                                                                checked             = {this.state.codeId === 2}
-                                                            />
-                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                                +777
-                                                            </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                        onPress             = {() => this.selectCodeId(3, '+888')}
-                                                    >
-                                                        <View style={[styles.overHidden, styles.rowRight]}>
-                                                            <CheckBox
-                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                                color               = {styles.text_red}
-                                                                selectedColor       = {styles.text_red}
-                                                                checked             = {this.state.codeId === 3}
-                                                            />
-                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                                +777
-                                                            </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                        onPress             = {() => this.selectCodeId(4, '+1000')}
-                                                    >
-                                                        <View style={[styles.overHidden, styles.rowRight]}>
-                                                            <CheckBox
-                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                                color               = {styles.text_red}
-                                                                selectedColor       = {styles.text_red}
-                                                                checked             = {this.state.codeId === 4}
-                                                            />
-                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                                +777
-                                                            </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View>
-
-                                            </View>
-                                        </Modal>
                                     </View>
 
-                                    <TouchableOpacity
-                                        style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
-                                        onPress     = {this.toggleModalNationality}
-                                    >
-                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
-                                            {this.state.nationality}
-                                        </Text>
-                                        <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='down' />
-                                    </TouchableOpacity>
-                                    <Modal isVisible={this.state.isModalNationality} onBackdropPress={() => this.toggleModalNationality()} style={[ styles.bottomCenter, styles.Width_100 ]}>
-                                        <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
-
-                                            <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
-                                                <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
-                                                    {i18n.t('naonality')}
-                                                </Text>
-                                            </View>
-
-                                            <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
-                                                <TouchableOpacity
-                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                    onPress             = {() => this.selectnationalityId(1, 'مصري')}
-                                                >
-                                                    <View style={[styles.overHidden, styles.rowRight]}>
-                                                        <CheckBox
-                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                            color               = {styles.text_red}
-                                                            selectedColor       = {styles.text_red}
-                                                            checked             = {this.state.nationalityId === 1}
-                                                        />
-                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                            مصري
-                                                        </Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                    onPress             = {() => this.selectnationalityId(2, 'سعودي')}
-                                                >
-                                                    <View style={[styles.overHidden, styles.rowRight]}>
-                                                        <CheckBox
-                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                            color               = {styles.text_red}
-                                                            selectedColor       = {styles.text_red}
-                                                            checked             = {this.state.nationalityId === 2}
-                                                        />
-                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                            سعودي
-                                                        </Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                    onPress             = {() => this.selectnationalityId(3, 'اجنبي')}
-                                                >
-                                                    <View style={[styles.overHidden, styles.rowRight]}>
-                                                        <CheckBox
-                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                            color               = {styles.text_red}
-                                                            selectedColor       = {styles.text_red}
-                                                            checked             = {this.state.nationalityId === 3}
-                                                        />
-                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                            اجنبي
-                                                        </Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                            </View>
-
+                                    <View style={[styles.position_R, styles.overHidden, styles.height_70, styles.flexCenter]}>
+                                        <View style={[ styles.position_A, styles.left_20 ]}>
+                                            <Icon style={[styles.textSize_16, styles.text_light_gray]} type="FontAwesome" name='intersex' />
                                         </View>
-                                    </Modal>
+                                        <Item floatingLabel style={[styles.item, styles.position_R, styles.overHidden]}>
+                                            <Input
+                                                placeholder={i18n.translate('naonality')}
+                                                style={[styles.input, styles.height_50]}
+                                                onChangeText={(nationality) => this.setState({nationality})}
+                                            />
+                                        </Item>
+                                    </View>
 
 
                                     <TouchableOpacity
@@ -388,73 +317,45 @@ class Register extends Component {
                                     <Modal isVisible={this.state.isModalCountry} onBackdropPress={() => this.toggleModalCountry()} style={[ styles.bottomCenter, styles.Width_100 ]}>
                                         <View style={[styles.overHidden, styles.bg_White , styles.Width_100, styles.position_R, styles.top_20]}>
 
-                                            <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
-                                                <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
-                                                    {i18n.t('choosecity')}
-                                                </Text>
-                                            </View>
-
-                                            <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
-                                                <TouchableOpacity
-                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                    onPress             = {() => this.selectCountryId(1, 'مصر')}
-                                                >
-                                                    <View style={[styles.overHidden, styles.rowRight]}>
-                                                        <CheckBox
-                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                            color               = {styles.text_red}
-                                                            selectedColor       = {styles.text_red}
-                                                            checked             = {this.state.countryId === 1}
-                                                        />
-                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                            مصر
-                                                        </Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                    onPress             = {() => this.selectCountryId(2, 'السعوديه')}
-                                                >
-                                                    <View style={[styles.overHidden, styles.rowRight]}>
-                                                        <CheckBox
-                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                            color               = {styles.text_red}
-                                                            selectedColor       = {styles.text_red}
-                                                            checked             = {this.state.countryId === 2}
-                                                        />
-                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                            السعوديه
-                                                        </Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                    onPress             = {() => this.selectCountryId(3, 'جده')}
-                                                >
-                                                    <View style={[styles.overHidden, styles.rowRight]}>
-                                                        <CheckBox
-                                                            style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                            color               = {styles.text_red}
-                                                            selectedColor       = {styles.text_red}
-                                                            checked             = {this.state.countryId === 3}
-                                                        />
-                                                        <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                            جده
-                                                        </Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                            </View>
-
+                                            <ScrollView>
+                                                <View style={[styles.paddingVertical_15, styles.Border, styles.border_gray]}>
+                                                    <Text style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.textCenter]}>
+                                                        {i18n.t('choosecity')}
+                                                    </Text>
+                                                </View>
+                                                <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
+                                                    {
+                                                        this.state.cities.map((city, i) => (
+                                                            <TouchableOpacity
+                                                                style={[styles.rowGroup, styles.marginVertical_10]}
+                                                                onPress={() => this.selectCountryId(city.id, city.name)}
+                                                            >
+                                                                <View style={[styles.overHidden, styles.rowRight]}>
+                                                                    <CheckBox
+                                                                        style={[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                                        color={styles.text_red}
+                                                                        selectedColor={styles.text_red}
+                                                                        checked={this.state.countryId === city.id}
+                                                                    />
+                                                                    <Text
+                                                                        style={[styles.textRegular, styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                                        { city.name }
+                                                                    </Text>
+                                                                </View>
+                                                            </TouchableOpacity>
+                                                        ))
+                                                    }
+                                                </View>
+                                            </ScrollView>
                                         </View>
                                     </Modal>
 
-
                                     <TouchableOpacity
                                         style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
-                                        onPress     = {this.toggleModalCountry}
+                                        onPress     = {() => this._pickImage('photoIdUser')}
                                     >
-                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
-                                            {i18n.translate('IDphoto')}
+                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray, styles.width_150 ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
+                                            {this.state.photoIdUser}
                                         </Text>
                                         <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='camera' />
                                     </TouchableOpacity>
@@ -462,10 +363,10 @@ class Register extends Component {
 
                                     <TouchableOpacity
                                         style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
-                                        onPress     = {this.toggleModalCountry}
+                                        onPress     = {() => this._pickImage('photoLicenseUser')}
                                     >
-                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
-                                            {i18n.translate('licensephoto')}
+                                        <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray, styles.width_150 ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
+                                            {this.state.photoLicenseUser}
                                         </Text>
                                         <Icon style={[styles.textSize_12, styles.text_black_gray]} type="AntDesign" name='camera' />
                                     </TouchableOpacity>
@@ -519,14 +420,9 @@ class Register extends Component {
     }
 }
 
-export default Register;
-
-// const mapStateToProps = ({ auth, profile, lang }) => {
-//     return {
-//         loading     : auth.loading,
-//         auth        : auth.user,
-//         user        : profile.user,
-//         lang        : lang.lang
-//     };
-// };
-// export default connect(mapStateToProps, {  })(Login);
+const mapStateToProps = ({ lang }) => {
+    return {
+        lang        : lang.lang
+    };
+};
+export default connect(mapStateToProps, {register})(Register);

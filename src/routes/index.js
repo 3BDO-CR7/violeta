@@ -19,6 +19,8 @@ import ManageRequests           from "../components/ManageRequests";
 import Accounts                 from "../components/Accounts";
 import EditProfile              from "../components/EditProfile";
 import DetailsOrder             from "../components/DetailsOrder";
+import ChangePassword           from "../components/ChangePassword";
+import ActiveAccount            from "../components/ActiveAccount";
 import Tabs                     from "../components/Tabs";
 import DrawerCustomization      from "./DrawerCustomization";
 
@@ -48,6 +50,36 @@ const drawerNavigator = createDrawerNavigator({
 const AppNavigator = createStackNavigator({
     InitScreen : {
         screen : InitScreen,
+        navigationOptions: {
+            header: null
+        }
+    },
+    ActiveAccount : {
+        screen : ActiveAccount,
+        navigationOptions: {
+            header: null
+        }
+    },
+    NewPassword : {
+        screen : NewPassword,
+        navigationOptions: {
+            header: null
+        }
+    },
+    ActivationCode : {
+        screen : ActivationCode,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Login : {
+        screen : Login,
+        navigationOptions: {
+            header: null
+        }
+    },
+    ChangePassword : {
+        screen : ChangePassword,
         navigationOptions: {
             header: null
         }
@@ -106,26 +138,8 @@ const AppNavigator = createStackNavigator({
             header: null
         }
     },
-    Login : {
-        screen : Login,
-        navigationOptions: {
-            header: null
-        }
-    },
     ForgetPassword : {
         screen : ForgetPassword,
-        navigationOptions: {
-            header: null
-        }
-    },
-    ActivationCode : {
-        screen : ActivationCode,
-        navigationOptions: {
-            header: null
-        }
-    },
-    NewPassword : {
-        screen : NewPassword,
         navigationOptions: {
             header: null
         }

@@ -9,32 +9,38 @@ export const register = (data, props) => {
 
         AsyncStorage.getItem('deviceID').then(device_id => {
             axios({
-                url: CONST.url + 'register',
+                url: CONST.url + 'DelegateRegister',
                 method: 'POST',
                 data: {
-                    name			: data.fullName,
+                    avatar          : data.avatar,
+                    name			: data.name,
                     email			: data.email,
-                    phone			: data.phone,
+                    phone		    : data.phone,
+                    nationality		: data.nationality,
+                    city_id			: data.city_id,
                     password		: data.password,
-                    national_id		: data.NationalNnm,
-                    lang			: data.lang,
+                    id_image	    : data.id_image,
+                    license_image	: data.license_image,
+                    lang 			: data.lang,
                     device_id,
                 }
             }).then(response => {
+
                 dispatch({type: 'register', payload: response.data});
-                if (response.data.success === true){
+
+                if (response.data.status == 1){
                     props.navigation.navigate('ActiveAccount', {
                         code			: response.data.data.code,
-                        user_id			: response.data.data.user_id,
-                        phone			: data.fullName,
+                        user_id			: response.data.data.id,
+                        phone			: data.phone,
                         password		: data.password,
                         deviceId		: device_id
                     });
                 }
 
                 Toast.show({
-                    text        	: response.data.message,
-                    type			: response.data.success === true ? "success" : "danger",
+                    text        	: response.data.msg,
+                    type			: response.data.status == 1 ? "success" : "danger",
                     duration    	: 3000,
                     textStyle   	: {
                         color       	: "white",

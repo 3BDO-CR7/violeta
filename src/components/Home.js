@@ -42,7 +42,7 @@ class Home extends Component {
                 status      : 2,
                 lat         : this.state.latitude,
                 lng         : this.state.longitude,
-                user_id     : this.props.user.id ,
+                user_id     : this.props.auth.data.id,
             }
         }).then(response => {
 
@@ -180,13 +180,13 @@ class Home extends Component {
                                         </View>
                                     ))
                                 :
-                                <View style={[ styles.overHidden ]}>
-                                    <Animatable.View animation="fadeInUp" easing="ease-out" delay={300} style={[styles.flexCenter, styles.Width_90]}>
-                                        <View style={[ styles.Width_100, styles.flexCenter, styles.height_full ]}>
-                                            <Image style={[styles.icoImage]} source={require('../../assets/img/no_data.png')}/>
-                                        </View>
-                                    </Animatable.View>
-                                </View>
+                                    <View style={[ styles.overHidden ]}>
+                                        <Animatable.View animation="fadeInUp" easing="ease-out" delay={300} style={[styles.flexCenter, styles.Width_90]}>
+                                            <View style={[ styles.Width_100, styles.flexCenter, styles.height_full ]}>
+                                                <Image style={[styles.icoImage]} source={require('../../assets/img/no_data.png')}/>
+                                            </View>
+                                        </Animatable.View>
+                                    </View>
                             :
 
                             <View style={[ styles.overHidden ]}>

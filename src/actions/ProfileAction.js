@@ -1,19 +1,19 @@
 import axios from 'axios';
 import CONST from '../consts'
 import {AsyncStorage} from "react-native";
+import {Toast} from "native-base";
 
 
-export const profile = ( id, lang ) => {
+export const profile = ( { user_id, lang } ) => {
 
     return (dispatch) => {
         axios({
             method  : 'POST',
             url     : CONST.url + 'profileDetailes',
-            data    : {user_id : id , lang: lang},
+            data    : {user_id : user_id , lang: lang},
         }).then(response => {
             const data = response.data.data;
             dispatch({type: 'profile_data', data});
-            console.log('response_data', response.data.data)
         })
     }
 };
@@ -30,6 +30,7 @@ export const updateProfile = (data) => {
                 avatar              : data.avatar,
                 email               : data.email,
                 city_id             : data.city_id,
+                nationality         : data.nationality,
                 lang                : data.lang,
                 user_id             : data.user_id,
                 id_image            : data.id_image,
@@ -38,9 +39,18 @@ export const updateProfile = (data) => {
             }}).then(response => {
 
                 const data = response.data;
-                dispatch({type: 'update_profile', data})
+                dispatch({type: 'update_profile', data});
 
-            }).catch(() => {
+                Toast.show({
+                    text: response.data.message,
+                    type: response.data.status == 1 ? "success" : "danger",
+                    duration: 3000,
+                    textStyle   : {
+                        color       : "white",
+                        fontFamily  : 'cairo',
+                        textAlign   : 'center'
+                    }
+                });
 
             })
     }

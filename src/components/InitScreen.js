@@ -11,6 +11,9 @@ class InitScreen extends Component {
 
     async componentWillMount() {
 
+        console.log('auth', this.props.auth);
+        console.log('user', this.props.user);
+
         if (this.props.auth == null && this.props.user == null)
             this.props.navigation.navigate('Login');
         else

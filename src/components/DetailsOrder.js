@@ -70,7 +70,7 @@ class DetailsOrder extends Component {
             data : {
                 lang            : this.props.lang,
                 order_id        : this.props.navigation.state.params.order_id,
-                user_id         : this.props.user.id
+                user_id         : this.props.auth.data.id
             }
         }).then(response => {
 
@@ -107,7 +107,7 @@ class DetailsOrder extends Component {
             data : {
                 lang            : this.props.lang,
                 order_id        : this.props.navigation.state.params.order_id,
-                user_id         : this.props.user.id
+                user_id         : this.props.auth.data.id
             }
         }).then(response => {
 
@@ -143,7 +143,7 @@ class DetailsOrder extends Component {
             data : {
                 lang            : this.props.lang,
                 order_id        : this.props.navigation.state.params.order_id,
-                user_id         : this.props.user.id
+                user_id         : this.props.auth.data.id
             }
         }).then(response => {
 
@@ -179,7 +179,7 @@ class DetailsOrder extends Component {
             data : {
                 lang            : this.props.lang,
                 order_id        : this.props.navigation.state.params.order_id,
-                user_id         : this.props.user.id
+                user_id         : this.props.auth.data.id
             }
         }).then(response => {
 

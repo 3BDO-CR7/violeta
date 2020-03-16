@@ -88,27 +88,18 @@ class EditProfile extends Component {
         let isError = false;
         let msg = '';
 
-        if (this.state.name.length <= 0) {
+        if (this.state.nameUser.length <= 0) {
             isError = true;
             msg = i18n.t('entername');
-        }else if (this.state.email.length <= 0) {
+        }else if (this.state.emailUser.length <= 0) {
             isError = true;
             msg = i18n.t('entermail');
-        }else if (this.state.phone.length <= 0) {
+        }else if (this.state.phoneUser.length <= 0) {
             isError = true;
             msg = i18n.t('namereq');
-        } else if (this.state.nationalityId === null) {
-            isError = true;
-            msg = i18n.t('ennaonality');
         } else if (this.state.countryId === null) {
             isError = true;
             msg = i18n.t('choosecity');
-        } else if (this.state.idBase64 === null) {
-            isError = true;
-            msg = i18n.t('passreq');
-        } else if ( this.state.licImageBase64 === null ) {
-            isError = true;
-            msg = i18n.t('notmatch');
         }
         if (msg !== '') {
             Toast.show({
@@ -128,25 +119,24 @@ class EditProfile extends Component {
     askPermissionsAsync = async () => {
         await Permissions.askAsync(Permissions.CAMERA);
         await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
     };
 
     _pickImage = async (key) => {
 
         this.askPermissionsAsync();
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            aspect: [4, 3],
-            base64:true,
-            quality: 0.5
+        let result      = await ImagePicker.launchImageLibraryAsync({
+            aspect      : [4, 3],
+            base64      : true,
+            quality     : 0.5
         });
 
         if (!result.cancelled) {
-            if (key === 'userImage'){
-                this.setState({ imgUser: result.uri ,idBase64:result.base64 });
-            }else if(key === 'idImage'){
+            if (key === 'imgUser'){
+                this.setState({ imgUser: result.uri ,userImageBase64:result.base64 });
+            }else if(key === 'photoIdUser'){
                 this.setState({ photoIdUser: result.uri ,idBase64:result.base64 });
-            }else if(key === 'licImage'){
+            }else if(key === 'photoLicenseUser'){
                 this.setState({ photoLicenseUser: result.uri ,licImageBase64:result.base64 });
             }
         }
@@ -162,14 +152,16 @@ class EditProfile extends Component {
         if (!err){
 
             const data = {
-                name            : this.state.name,
-                phone           : this.state.phone,
-                image           : this.state.base64,
-                email           : this.state.email,
-                national_id     : this.state.national_id,
-                device_id       : null,
+                name            : this.state.nameUser,
+                avatar          : this.state.userImageBase64,
+                email           : this.state.emailUser,
+                phone           : this.state.phoneUser,
+                nationality     : this.state.nationality,
+                city_id         : this.state.countryId,
                 lang            : this.props.lang,
-                token           : this.props.user.token
+                user_id         : this.props.auth.data.id,
+                id_image        : this.state.idBase64,
+                license_image   : this.state.licImageBase64,
             };
 
             this.props.updateProfile(data);
@@ -177,7 +169,7 @@ class EditProfile extends Component {
             setTimeout(()=> {
                 this.setState({spinner : false});
                 this.props.navigation.navigate('Profile');
-            } , 2000);
+            } , 1000);
 
         }else {
 
@@ -231,11 +223,13 @@ class EditProfile extends Component {
 
         return (
             <Container>
+
                 <Spinner
                     visible     = {this.state.spinner}
                     textStyle   = {styles.text_White}
                 />
                 <NavigationEvents onWillFocus={() => this.onFocus()} />
+
                 <Header style={styles.headerView}>
                     <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
                          <Left style={[ styles.leftIcon ]}>
@@ -269,7 +263,7 @@ class EditProfile extends Component {
                                     }
                                     <TouchableOpacity
                                         style       = {[ styles.position_A,styles.width_100, styles.height_100, styles.Radius_50, styles.flexCenter, styles.top_0, styles.right_0, styles.zIndex, styles.overlay_white  ]}
-                                        onPress     = {this._pickImage('userImage')}>
+                                        onPress     = {() => this._pickImage('imgUser')}>
                                         <Icon style={[styles.text_pink, styles.textSize_22]} type="Entypo" name='camera' />
                                     </TouchableOpacity>
                                 </View>
@@ -284,7 +278,7 @@ class EditProfile extends Component {
                                 <Input
                                     placeholder={i18n.translate('userName')}
                                     style={[styles.input, styles.height_50]}
-                                    onChangeText={(name) => this.setState({name})}
+                                    onChangeText={(nameUser) => this.setState({nameUser})}
                                     value = { this.state.nameUser }
                                 />
                             </Item>
@@ -298,7 +292,7 @@ class EditProfile extends Component {
                                 <Input
                                     placeholder={i18n.translate('email')}
                                     style={[styles.input, styles.height_50]}
-                                    onChangeText={(email) => this.setState({email})}
+                                    onChangeText={(emailUser) => this.setState({emailUser})}
                                     value = { this.state.emailUser }
                                 />
                             </Item>
@@ -313,7 +307,7 @@ class EditProfile extends Component {
                                     <Input
                                         placeholder={i18n.translate('phone')}
                                         style={[styles.input, styles.height_50,]}
-                                        onChangeText={(phone) => this.setState({phone})}
+                                        onChangeText={(phoneUser) => this.setState({phoneUser})}
                                         keyboardType={'number-pad'}
                                         value = { this.state.phoneUser }
                                     />
@@ -383,7 +377,7 @@ class EditProfile extends Component {
 
                         <TouchableOpacity
                             style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
-                            onPress     = {this._pickImage('idImage')}
+                            onPress     = {() => this._pickImage('photoIdUser')}
                         >
                             <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray, styles.width_150 ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
                                 { this.state.photoIdUser }
@@ -394,7 +388,7 @@ class EditProfile extends Component {
 
                         <TouchableOpacity
                             style       = {[ styles.paddingVertical_10, styles.paddingHorizontal_15, styles.rowGroup, styles.Border, styles.border_gray, styles.Radius_60, styles.Width_100, styles.marginVertical_10]}
-                            onPress     = {this._pickImage('licImage')}
+                            onPress     = {() => this._pickImage('photoLicenseUser')}
                         >
                             <Text style={[styles.textRegular, styles.textSize_12, styles.text_black_gray, styles.width_150 ]} numberOfLines = { 1 } prop with ellipsizeMode = "tail">
                                 { this.state.photoLicenseUser }

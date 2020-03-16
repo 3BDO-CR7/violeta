@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {View, Text, Image, TouchableOpacity, AsyncStorage, KeyboardAvoidingView,ImageBackground} from "react-native";
+import {View, Text, Image, TouchableOpacity, KeyboardAvoidingView,ImageBackground} from "react-native";
 import {
     Body,
     Button, CheckBox,
@@ -19,18 +19,17 @@ import styles from '../../assets/style';
 import i18n from '../../locale/i18n'
 import * as Animatable from 'react-native-animatable';
 import {NavigationEvents} from "react-navigation";
-import Modal from "react-native-modal";
 import axios from "axios";
 import CONST from "../consts";
+import {connect} from "react-redux";
+import {chooseLang, profile, userLogin} from "../actions";
+import Spinner from 'react-native-loading-spinner-overlay';
 
-class ForgetPassword extends Component {
+class ActiveAccount extends Component {
     constructor(props){
         super(props);
         this.state = {
-            code                        : i18n.t('codeocun'),
-            codeId                      : null,
-            isModalCode                 : false,
-            phone                       : '',
+            code                       : '',
         }
     }
 
@@ -38,9 +37,12 @@ class ForgetPassword extends Component {
         let isError = false;
         let msg = '';
 
-        if (this.state.phone.length <= 0) {
+        if (this.state.code.length <= 0) {
             isError = true;
-            msg = i18n.t('namereq');
+            msg     = i18n.t('codeN');
+        }else if(this.state.code !== this.props.navigation.state.params.code){
+            isError = true;
+            msg     = i18n.t('codeNotCorrect');
         }
         if (msg !== '') {
             Toast.show({
@@ -59,47 +61,44 @@ class ForgetPassword extends Component {
 
     onLoginPressed() {
 
-        const err = this.validate();
-
         this.setState({spinner: true});
 
-        if (!err){
+        const err = this.validate();
 
+        if (!err){
             axios({
-                url         : CONST.url + 'getActivationCode',
+                url         : CONST.url + 'activateAccount',
                 method      : 'POST',
                 data : {
                     lang        : this.props.lang,
-                    phone       : this.state.phone,
+                    user_id     : this.props.navigation.state.params.user_id,
                 }
             }).then(response => {
-
-                if(response.data.status == 1){
-
-                    let code        = response.data.data.code;
-                    let user_id     = response.data.data.user_id;
-
-                    this.props.navigation.navigate('ActivationCode', { code : code, user_id : user_id });
-
-                }
 
                 this.setState({spinner : false});
 
                 Toast.show({
-                    text        : response.data.msg,
-                    type        : response.data.status == 1 ? "success" : "danger",
-                    duration    : 3000,
-                    textStyle     : {
+                    text            : response.data.message,
+                    type            : "success",
+                    duration        : 3000,
+                    textStyle       : {
                         color           : "white",
                         fontFamily      : 'cairo',
                         textAlign       : 'center',
                     }
                 });
 
+                this.props.navigation.navigate('drawerNavigator');
+
+                const { password, phone, deviceId } = this.props.navigation.state.params;
+                const type = 'user';
+
+                this.props.userLogin({ phone, password, deviceId , type}, this.props.lang);
+
             }).catch(err => {
                 console.log(err);
                 this.setState({spinner : false});
-            })
+            });
 
         }else {
 
@@ -109,20 +108,11 @@ class ForgetPassword extends Component {
 
     }
 
-    toggleModalCode = () => {
-        this.setState({ isModalCode: !this.state.isModalCode});
-    };
-
-    selectCodeId(id, name) {
-        this.setState({
-            codeId      : id,
-            code        : name
-        });
-        this.setState({ isModalCode: !this.state.isModalCode});
-    }
-
     async componentWillMount() {
 
+        alert(this.props.navigation.state.params.code)
+
+        console.log('code', this.props.navigation.state.params.code)
 
     }
 
@@ -136,6 +126,14 @@ class ForgetPassword extends Component {
 
             <Container>
 
+
+                <Spinner
+                    visible     = {this.state.spinner}
+                    textStyle   = {styles.text_White}
+                />
+                <NavigationEvents onWillFocus={() => this.onFocus()} />
+
+
                 <Header style={styles.headerView}>
                     <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
                         <Left style={[ styles.leftIcon ]}>
@@ -145,7 +143,7 @@ class ForgetPassword extends Component {
                         </Left>
                         <Body style={[ styles.bodyText ]}>
                             <Title style={[styles.textRegular , styles.text_White, styles.textSize_16, styles.textCenter, styles.Width_100, { paddingLeft : 0, paddingRight : 0 }]}>
-                                { i18n.t('forgetPassword') }
+                                { i18n.t('actcode') }
                             </Title>
                         </Body>
                     </ImageBackground>
@@ -165,20 +163,18 @@ class ForgetPassword extends Component {
                             <KeyboardAvoidingView behavior={'padding'} style={[styles.Width_100]}>
                                 <Form style={[styles.Width_100, styles.flexCenter, styles.marginVertical_10, styles.Width_90]}>
 
-                                    <View style={[styles.position_R, styles.rowGroup]}>
-                                        <View style={[styles.position_R, styles.overHidden, styles.height_70, styles.flexCenter, styles.flex_1]}>
-                                            <View style={[ styles.position_A, styles.left_20 ]}>
-                                                <Icon style={[styles.textSize_16, styles.text_light_gray]} type="Ionicons" name='ios-phone-portrait' />
-                                            </View>
-                                            <Item floatingLabel style={[styles.item, styles.position_R, styles.overHidden]}>
-                                                <Input
-                                                    placeholder={i18n.translate('phone')}
-                                                    style={[styles.input, styles.height_50,]}
-                                                    onChangeText={(phone) => this.setState({phone})}
-                                                    keyboardType={'number-pad'}
-                                                />
-                                            </Item>
+                                    <View style={[styles.position_R, styles.overHidden, styles.height_70, styles.flexCenter, styles.flex_1]}>
+                                        <View style={[ styles.position_A, styles.left_20 ]}>
+                                            <Icon style={[styles.textSize_16, styles.text_light_gray]} type="Ionicons" name='ios-phone-portrait' />
                                         </View>
+                                        <Item floatingLabel style={[styles.item, styles.position_R, styles.overHidden]}>
+                                            <Input
+                                                placeholder={i18n.translate('code')}
+                                                style={[styles.input, styles.height_50,]}
+                                                onChangeText={(code) => this.setState({code})}
+                                                keyboardType={'number-pad'}
+                                            />
+                                        </Item>
                                     </View>
 
                                     <TouchableOpacity
@@ -202,14 +198,11 @@ class ForgetPassword extends Component {
     }
 }
 
-export default ForgetPassword;
-
-// const mapStateToProps = ({ auth, profile, lang }) => {
-//     return {
-//         loading     : auth.loading,
-//         auth        : auth.user,
-//         user        : profile.user,
-//         lang        : lang.lang
-//     };
-// };
-// export default connect(mapStateToProps, {  })(Login);
+const mapStateToProps = ({ auth, profile, lang }) => {
+    return {
+        auth        : auth.user,
+        user        : profile.user,
+        lang        : lang.lang
+    };
+};
+export default connect(mapStateToProps, { userLogin, profile, chooseLang })(ActiveAccount);

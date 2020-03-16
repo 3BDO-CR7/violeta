@@ -54,6 +54,7 @@ const ar = {
     'editdata'                  : 'تعديل بياناتي',
     'entermessage'              : 'إدخل محتوي الرساله',
     'entermail'                 : 'يجب إدخال البريد بشكل صحيح',
+    'entmail'                   : 'إدخال البريد الإلكتروني',
     'notmatch'                  : 'كلمه المرور غير متطابقه',
     'mass'                      : 'آدخل رسالتك',
     'codeNotCorrect'            : 'كود التفعيل غير صحيح',
@@ -249,6 +250,8 @@ const ar = {
     'Bill'                      : 'الفاتوره',
     'acc'                       : 'قبول',
     'Totalorder'                : 'إجمالي الطلب',
+    'enIDphoto'                 : 'ادخل صوره الهويه',
+    'enlicensephoto'            : 'ادخل صوره الرخصه',
 };
 
 export default ar;

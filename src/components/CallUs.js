@@ -74,7 +74,7 @@ class CallUs extends Component {
                 data : {
                     lang            : this.props.lang,
                     message         : this.state.massage,
-                    user_id         : this.props.user.id
+                    user_id         : this.props.auth.data.id
                 }
             }).then(response => {
 

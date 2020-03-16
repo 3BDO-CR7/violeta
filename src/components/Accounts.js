@@ -12,12 +12,16 @@ import {
 import styles from '../../assets/style';
 import i18n from "../../locale/i18n";
 import {connect} from "react-redux";
-import {chooseLang} from "../actions";
+import {chooseLang, profile, userLogin} from "../actions";
 import Modal from "react-native-modal";
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import {NavigationEvents} from "react-navigation";
 import Tabs from "./Tabs";
+import axios from "axios";
+import CONST from "../consts";
+import Spinner from "react-native-loading-spinner-overlay";
+import * as Animatable from "react-native-animatable";
 
 class Accounts extends Component {
     constructor(props){
@@ -33,11 +37,34 @@ class Accounts extends Component {
             nameUser                    : '',
             numAcc                      : '',
             money                       : '',
+            allBanks                    : [],
+            unBaidMony                  : ''
         }
     }
 
     componentWillMount() {
 
+        this.setState({spinner: true});
+
+        axios({
+            url         : CONST.url + 'displayBanks',
+            method      : 'POST',
+            data : {
+                lang        : this.props.lang,
+                user_id     : this.props.auth.data.id,
+            }
+        }).then(response => {
+
+            this.setState({
+                allBanks                    : response.data.data.banks,
+                unBaidMony                  : response.data.data.unBaidMony,
+                spinner                     : false
+            });
+
+        }).catch(err => {
+            console.log(err);
+            this.setState({spinner : false});
+        })
 
     }
 
@@ -99,12 +126,47 @@ class Accounts extends Component {
 
     onSent() {
 
-        this.setState({spinner: true});
-
         const err = this.validate();
 
         if (!err){
-            this.props.navigation.navigate('BankAccounts');
+
+            this.setState({spinner: true});
+
+            axios({
+                url         : CONST.url + 'bankTransfer',
+                method      : 'POST',
+                data : {
+                    lang                        : this.props.lang,
+                    user_id                     : this.props.auth.data.id,
+                    bank_id                     : this.state.bankId,
+                    user_account_number         : this.state.nameUser,
+                    iban_number                 : this.state.numAcc,
+                    amount                      : this.state.money,
+                    image                       : this.state.base64,
+                }
+            }).then(response => {
+
+                this.setState({spinner : false});
+
+                this.props.navigation.navigate('Home');
+
+                Toast.show({
+                    text        : response.data.message,
+                    type        : response.data.status === '1' ? "success" : "danger",
+                    duration    : 3000,
+                    textStyle     : {
+                        color           : "white",
+                        fontFamily      : 'cairo',
+                        textAlign       : 'center',
+                    }
+                });
+
+            }).catch(err => {
+                console.log(err);
+                this.setState({spinner : false});
+            })
+        }else {
+            this.setState({spinner : false});
         }
 
     }
@@ -134,6 +196,10 @@ class Accounts extends Component {
         return (
             <Container>
 
+                <Spinner
+                    visible     = {this.state.spinner}
+                    textStyle   = {styles.text_White}
+                />
                 <NavigationEvents onWillFocus={() => this.onFocus()} />
 
                 <Header style={styles.headerView}>
@@ -156,28 +222,41 @@ class Accounts extends Component {
                     <View style={[ styles.overHidden, styles.paddingVertical_20, styles.Width_90, styles.flexCenter ]}>
                         <View style={[ styles.bg_pink, styles.paddingVertical_10, styles.Width_100 , styles.Radius_10, styles.flexCenter ]}>
                             <Text style={[ styles.text_White, styles.textRegular, styles.textSize_14]}>
-                                { i18n.t('amount') } : 344 ريال
+                                { i18n.t('amount') } : { this.state.unBaidMony } { i18n.t('ryal') }
                             </Text>
                         </View>
 
-                        <View style={[ styles.bg_gray, styles.Radius_10, styles.marginVertical_10, styles.paddingVertical_10, styles.paddingHorizontal_10, styles.Width_100 ]}>
-                            <View style={[ styles.rowRight ]}>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('Numacc') } : </Text>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>شعوذه</Text>
-                            </View>
-                            <View style={[ styles.rowRight ]}>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('namebank') } : </Text>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>CIB</Text>
-                            </View>
-                            <View style={[ styles.rowRight ]}>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('acountnumber') } : </Text>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>01032131231232</Text>
-                            </View>
-                            <View style={[ styles.rowRight ]}>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100, styles.textLeft ]}> : IBAN</Text>
-                                <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>3213213</Text>
-                            </View>
-                        </View>
+                        {
+                            (this.state.allBanks.length !== 0) ?
+                                this.state.allBanks.map((bank, i) => (
+                                    <View style={[ styles.bg_gray, styles.Radius_10, styles.marginVertical_10, styles.paddingVertical_10, styles.paddingHorizontal_10, styles.Width_100 ]}>
+                                        <View style={[ styles.rowRight ]}>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('Numacc') } : </Text>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>{ bank.account_name }</Text>
+                                        </View>
+                                        <View style={[ styles.rowRight ]}>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('namebank') } : </Text>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>{ bank.name }</Text>
+                                        </View>
+                                        <View style={[ styles.rowRight ]}>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('acountnumber') } : </Text>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>{ bank.account_number }</Text>
+                                        </View>
+                                        <View style={[ styles.rowRight ]}>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100, styles.textLeft ]}> : IBAN</Text>
+                                            <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}>{ bank.iban_number }</Text>
+                                        </View>
+                                    </View>
+                                ))
+                                :
+                                <View style={[ styles.overHidden ]}>
+                                    <Animatable.View animation="fadeInUp" easing="ease-out" delay={300} style={[styles.flexCenter, styles.Width_90]}>
+                                        <View style={[ styles.Width_100, styles.flexCenter, styles.height_full ]}>
+                                            <Image style={[styles.icoImage]} source={require('../../assets/img/no_data.png')}/>
+                                        </View>
+                                    </Animatable.View>
+                                </View>
+                        }
 
                         <View style={[ styles.Width_100 ]}>
                             <Form style={[styles.Width_100, styles.flexCenter, styles.marginVertical_10, styles.Width_90]}>
@@ -202,38 +281,26 @@ class Accounts extends Component {
                                         </View>
 
                                         <View style={[styles.paddingHorizontal_10, styles.marginVertical_10]}>
-                                            <TouchableOpacity
-                                                style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                onPress             = {() => this.selectBankId(1, 'مصري')}
-                                            >
-                                                <View style={[styles.overHidden, styles.rowRight]}>
-                                                    <CheckBox
-                                                        style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                        color               = {styles.text_red}
-                                                        selectedColor       = {styles.text_red}
-                                                        checked             = {this.state.bankId === 1}
-                                                    />
-                                                    <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                        مصري
-                                                    </Text>
-                                                </View>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style               = {[styles.rowGroup, styles.marginVertical_10]}
-                                                onPress             = {() => this.selectBankId(2, 'سعودي')}
-                                            >
-                                                <View style={[styles.overHidden, styles.rowRight]}>
-                                                    <CheckBox
-                                                        style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
-                                                        color               = {styles.text_red}
-                                                        selectedColor       = {styles.text_red}
-                                                        checked             = {this.state.bankId === 2}
-                                                    />
-                                                    <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
-                                                        سعودي
-                                                    </Text>
-                                                </View>
-                                            </TouchableOpacity>
+                                            {
+                                                this.state.allBanks.map((bank, i) => (
+                                                    <TouchableOpacity
+                                                        style               = {[styles.rowGroup, styles.marginVertical_10]}
+                                                        onPress             = {() => this.selectBankId(bank.id, bank.name)}
+                                                    >
+                                                        <View style={[styles.overHidden, styles.rowRight]}>
+                                                            <CheckBox
+                                                                style               = {[styles.checkBox, styles.bg_red, styles.border_red]}
+                                                                color               = {styles.text_red}
+                                                                selectedColor       = {styles.text_red}
+                                                                checked             = {this.state.bankId === bank.id}
+                                                            />
+                                                            <Text style={[styles.textRegular , styles.text_black, styles.textSize_16, styles.paddingHorizontal_20]}>
+                                                                { bank.name }
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                ))
+                                            }
                                         </View>
 
                                     </View>
@@ -311,13 +378,11 @@ class Accounts extends Component {
     }
 }
 
-// export default Setting;
-
 const mapStateToProps = ({ auth, profile, lang }) => {
     return {
-        // auth: auth.user,
-        // user: profile.user,
+        auth: auth.user,
+        user: profile.user,
         lang: lang.lang
     };
 };
-export default connect(mapStateToProps, { chooseLang })(Accounts);
+export default connect(mapStateToProps, { userLogin, profile, chooseLang })(Accounts);

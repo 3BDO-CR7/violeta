@@ -13,7 +13,7 @@ class DrawerCustomization extends Component {
     constructor(props){
         super(props);
         this.state={
-            user: [],
+
         }
     }
 
@@ -33,7 +33,7 @@ class DrawerCustomization extends Component {
     logout(){
         this.props.navigation.closeDrawer();
         this.props.navigation.navigate('Login');
-        this.props.logout(this.props.auth.id);
+        this.props.logout(this.props.auth.data.id);
         this.props.tempAuth();
     }
 

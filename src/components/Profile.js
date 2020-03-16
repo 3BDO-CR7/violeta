@@ -8,41 +8,50 @@ import {chooseLang, profile, userLogin, logout, tempAuth} from "../actions";
 import * as Animatable from 'react-native-animatable';
 import Lightbox from 'react-native-lightbox';
 import Tabs from "./Tabs";
+import { NavigationEvents } from "react-navigation";
+import Spinner from "react-native-loading-spinner-overlay";
+
 
 class Profile extends Component {
     constructor(props){
         super(props);
         this.state = {
-            spinner                     : false,
-            imgUser                     : this.props.user.avatar,
-            nameUser                    : this.props.user.name,
-            emailUser                   : this.props.user.email,
-            phoneUser                   : this.props.user.phone,
-            nationUser                  : this.props.user.nationality,
-            countryUser                 : this.props.user.city,
-            photoIdUser                 : this.props.user.id_image,
-            photoLicenseUser            : this.props.user.license_image,
-            completed_orders            : this.props.user.completed_orders,
-            refused_orders              : this.props.user.refused_orders,
+            spinner                     : true,
         }
     }
 
-
     logout(){
-        this.props.navigation.closeDrawer();
         this.props.navigation.navigate('Login');
-        this.props.logout(this.props.auth.id);
+        this.props.logout(this.props.auth.data.id);
         this.props.tempAuth();
     }
+
+    async componentWillMount() {
+
+        this.setState({ spinner: false });
+
+        this.props.profile  ({user_id  : this.props.auth.data.id, lang : this.props.lang });
+
+    }
+
 
     static navigationOptions = () => ({
         drawerLabel : () => null,
     });
 
+    onFocus() {
+        this.componentWillMount();
+    }
+
     render() {
 
+        const { avatar , name, email, phone, nationality, city, id_image , license_image } = this.props.user;
+
         return (
+
             <Container>
+
+                <NavigationEvents onWillFocus={() => this.onFocus()} />
 
                 <Header style={styles.headerView}>
                     <ImageBackground source={require('../../assets/img/bg_header.png')} style={[ styles.Width_100, styles.height_full, styles.paddingTopHeader, styles.rowGroup ]}>
@@ -66,26 +75,26 @@ class Profile extends Component {
                         <View style={[ styles.marginVertical_10 , styles.flexCenter ]}>
                             <Animatable.View animation="zoomIn" easing="ease-out" delay={300} style={[styles.flexCenter]}>
                                 <View style={[ styles.overHidden , styles.marginVertical_10 ]}>
-                                    <Image style={[styles.width_100, styles.height_100, styles.Radius_50]} source={{ uri : this.state.imgUser }}/>
+                                    <Image style={[styles.width_100, styles.height_100, styles.Radius_50]} source={{ uri : avatar }}/>
                                 </View>
                             </Animatable.View>
-                            <Text style={[ styles.textRegular, styles.text_pink, styles.textSize_18 ]}> { this.state.nameUser } </Text>
-                            <Text style={[ styles.textRegular, styles.text_black, styles.textSize_14 ]}> { this.state.emailUser } </Text>
+                            <Text style={[ styles.textRegular, styles.text_pink, styles.textSize_18 ]}> { name } </Text>
+                            <Text style={[ styles.textRegular, styles.text_black, styles.textSize_14 ]}> { email } </Text>
                         </View>
 
                         <View style={[ styles.border_gray, styles.Border, styles.paddingVertical_10, styles.paddingHorizontal_10, styles.marginVertical_20, styles.Width_100 ]}>
                             <View style={[ styles.position_R, styles.overHidden ]}>
                                 <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
                                     <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('phone') } : </Text>
-                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.phoneUser } </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { phone } </Text>
                                 </View>
                                 <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
                                     <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100 ]}>{ i18n.t('naonality') } : </Text>
-                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.nationUser } </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { nationality } </Text>
                                 </View>
                                 <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
                                     <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.width_100, styles.textLeft ]}>{ i18n.t('city') } : </Text>
-                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.countryUser } </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_14, styles.text_black, styles.marginHorizontal_10 ]}> { city } </Text>
                                 </View>
                             </View>
                             <View style={[ styles.rowGroup, styles.paddingHorizontal_10, styles.paddingVertical_10, styles.marginVertical_10, styles.Width_100 ]}>
@@ -96,7 +105,7 @@ class Profile extends Component {
                                             <View style={[ styles.position_A, styles.top_0, styles.right_0, styles.Width_100, styles.height_full, styles.overlay_black, styles.flexCenter, styles.zIndex ]}>
                                                 <Icon style={[styles.textSize_16, styles.text_White]} type="FontAwesome" name='search-plus' />
                                             </View>
-                                            <Image style={[styles.width_120, styles.height_80]}  source={{ uri : this.state.photoIdUser }}/>
+                                            <Image style={[styles.width_120, styles.height_80]}  source={{ uri : id_image }}/>
                                         </TouchableOpacity>
                                     </Animatable.View>
                                 </View>
@@ -107,7 +116,7 @@ class Profile extends Component {
                                             <View style={[ styles.position_A, styles.top_0, styles.right_0, styles.Width_100, styles.height_full, styles.overlay_black, styles.flexCenter, styles.zIndex ]}>
                                                 <Icon style={[styles.textSize_16, styles.text_White]} type="FontAwesome" name='search-plus' />
                                             </View>
-                                            <Image style={[styles.width_120, styles.height_80]}  source={{ uri : this.state.photoLicenseUser }}/>
+                                            <Image style={[styles.width_120, styles.height_80]}  source={{ uri : license_image }}/>
                                         </TouchableOpacity>
                                     </Animatable.View>
                                 </View>
@@ -118,16 +127,18 @@ class Profile extends Component {
                             <View style={[ styles.position_R, styles.overHidden ]}>
                                 <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
                                     <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black]}>{ i18n.t('numorederdo') } : </Text>
-                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.completed_orders } </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black, styles.marginHorizontal_10 ]}> { this.props.user.completed_orders } </Text>
                                 </View>
                                 <View style={[ styles.rowRight, styles.marginVertical_5 ]}>
                                     <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black]}>{ i18n.t('numorederfi') } : </Text>
-                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black, styles.marginHorizontal_10 ]}> { this.state.refused_orders } </Text>
+                                    <Text style={[ styles.textRegular, styles.textSize_13, styles.text_black, styles.marginHorizontal_10 ]}> { this.props.user.refused_orders } </Text>
                                 </View>
                             </View>
                         </View>
 
-                        <TouchableOpacity style={[ styles.border_gray, styles.Border, styles.paddingVertical_10, styles.marginVertical_5, styles.Width_100, styles.flexCenter ]}>
+                        <TouchableOpacity
+                            style={[ styles.border_gray, styles.Border, styles.paddingVertical_10, styles.marginVertical_5, styles.Width_100, styles.flexCenter ]}
+                            onPress = {() => this.props.navigation.navigate('ChangePassword')}>
                             <Text style={[ styles.textRegular, styles.text_red, styles.textSize_14 ]}> { i18n.t('changepass') } </Text>
                         </TouchableOpacity>
 

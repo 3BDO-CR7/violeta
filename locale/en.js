@@ -53,6 +53,7 @@ const en = {
     'editdata'                          : 'edit my data',
     'entermessage'                      : 'Enter the content of the message',
     'entermail'                         : 'Mail must be entered correctly',
+    'entmail'                           : 'enter email',
     'notmatch'                          : 'password not match',
     'mass'                              : 'Enter your message',
     'codeNotCorrect'                    : 'The activation code is invalid',
@@ -240,6 +241,8 @@ const en = {
     'Bill'                              : 'Bill',
     'acc'                               : 'accepted',
     'Totalorder'                        : 'Total order',
+    'enIDphoto'                         : 'enter IDphoto',
+    'enlicensephoto'                    : 'enter licensephoto',
 
 };
 
